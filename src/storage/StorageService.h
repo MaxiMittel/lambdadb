@@ -69,6 +69,12 @@ public:
     void deleteBytes(std::string key, size_t offset, size_t length);
 
     /**
+     * Deletes a file from the storage
+     * @param key The name of the file
+     */
+    void deleteObject(std::string key);
+    
+    /**
      * Object exists
      * @param key The name of the file
      * @return True if the object exists

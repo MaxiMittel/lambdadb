@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 project(lambdadb CXX)
+set (CMAKE_CXX_STANDARD 20)
 
 include(FetchContent)
 
@@ -17,7 +18,7 @@ set(BUILD_SHARED_LIBS ON CACHE STRING "Link to shared libraries by default.")
 
 #Load required services/packages: This basic example uses S3.
 find_package(AWSSDK REQUIRED COMPONENTS s3)
-add_executable(${PROJECT_NAME} main.cpp src/net/Client.cpp src/net/Client.h src/net/Server.cpp src/net/Server.h src/db/Table.cpp src/db/Table.h src/db/Database.cpp src/db/Database.h src/db/DataType.h src/storage/StorageService.cpp src/storage/StorageService.h)
+add_executable(${PROJECT_NAME} main.cpp src/net/Client.cpp src/net/Client.h src/net/Server.cpp src/net/Server.h src/db/Table.cpp src/db/Table.h src/db/OffsetMap.cpp src/db/OffsetMap.h src/db/Database.cpp src/db/Database.h src/db/DataType.h src/storage/StorageService.cpp src/storage/StorageService.h)
 
 #Windows: This 'if' clause copies the SDK libraries from the installation location to the place where 
 #  this project's executable is located.  Without this you'll need to copy the install 

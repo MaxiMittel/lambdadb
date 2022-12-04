@@ -30,6 +30,7 @@ private:
     DataType type;
 public:
     DataEntry(T data, DataType type) : data(data), type(type) {}
+    virtual ~DataEntry() = default;
 
     /**
      * Returns the stored value

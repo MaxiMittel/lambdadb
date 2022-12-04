@@ -8,6 +8,7 @@
 #include <aws/s3/model/GetObjectRequest.h>
 #include <aws/s3/model/PutObjectRequest.h>
 #include <aws/s3/model/HeadObjectRequest.h>
+#include <aws/s3/model/DeleteObjectRequest.h>
 #include <sstream>
 
 StorageService::StorageService(std::string bucketName): BUCKET_NAME(std::move(bucketName)) {}
@@ -154,6 +155,20 @@ void StorageService::deleteBytes(std::string key, size_t offset, size_t length) 
         writeObject(key, Buffer{data, retrieved_content.size() - length}); 
     } else {
         throw std::runtime_error("Could not read object from S3");
+    }
+}
+
+void StorageService::deleteObject(std::string key) {
+    Aws::S3::S3Client s3_client;
+
+    Aws::S3::Model::DeleteObjectRequest object_request;
+    object_request.SetBucket(BUCKET_NAME);
+    object_request.SetKey(key);
+
+    auto delete_object_outcome = s3_client.DeleteObject(object_request);
+
+    if (!delete_object_outcome.IsSuccess()) {
+        throw std::runtime_error("Could not delete object from S3");
     }
 }
 
