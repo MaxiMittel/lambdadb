@@ -6,6 +6,8 @@
 #include "src/db/Table.h"
 //#include <nlohmann/json.hpp>
 //using json = nlohmann::json;
+#include "src/sql/lexer/Lexer.h"
+#include "src/sql/code/Repository.h"
 
 int main() {
     /*Server server(4000, "0.0.0.0");
@@ -22,7 +24,7 @@ int main() {
     }
     return 0;*/
 
-    Aws::SDKOptions options;
+    /*Aws::SDKOptions options;
     options.loggingOptions.logLevel = Aws::Utils::Logging::LogLevel::Info;
     Aws::InitAPI(options);
     {
@@ -37,7 +39,7 @@ int main() {
     user_columns.push_back(Column{"name", DataType::VARCHAR, 255, false});
     user_columns.push_back(Column{"age", DataType::INTEGER, 4, false});
 
-    Table table("user", database, user_columns, storageService);
+    Table table("user", database, user_columns, storageService);*/
 
     /*std::vector<std::shared_ptr<DataEntryBase>> user1;
     user1.push_back(std::make_shared<DataEntry<std::string>>("1", DataType::VARCHAR));
@@ -52,10 +54,18 @@ int main() {
     table.insertItem(user1);
     table.insertItem(user2);*/
 
-    table.getItems();
+    /*table.getItems();
 
     } // The SDK must be shutdown before the application terminates.
-    Aws::ShutdownAPI(options);
+    Aws::ShutdownAPI(options);*/
+
+    Repository repo("SELECT name AS vorname, 5 FROM user WHERE age > 20;");
+    Lexer lexer(repo);
+
+    while (lexer.has_next_token()) {
+        Token token = lexer.next();
+        std::cout << token << std::endl;
+    }
 
     return 0;
 }
