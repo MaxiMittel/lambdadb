@@ -62,9 +62,7 @@ enum NodeType {
     NOT,
     _NULL,
     DROP,
-    TABLE,
     ALTER,
-    TABLE,
     ADD,
     WHERE,
     ORDER,
@@ -157,15 +155,15 @@ class NodeInsertStmt: public Node {
     std::shared_ptr<Node> table_name = nullptr;
 
     // Optional
-    std::shared_ptr<Node> brace_open = nullptr;
+    std::shared_ptr<Node> brace_open_1 = nullptr;
     std::shared_ptr<Node> column_list = nullptr;
-    std::shared_ptr<Node> brace_close = nullptr;
+    std::shared_ptr<Node> brace_close_1 = nullptr;
     // Optional end
 
     std::shared_ptr<Node> values = nullptr;
-    std::shared_ptr<Node> brace_open = nullptr;
+    std::shared_ptr<Node> brace_open_2 = nullptr;
     std::shared_ptr<Node> expr_list = nullptr;
-    std::shared_ptr<Node> brace_close = nullptr;
+    std::shared_ptr<Node> brace_close_2 = nullptr;
 
     void accept(Visitor& visitor) override;
 };
@@ -417,9 +415,9 @@ class NodeValues: public Node {
     void accept(Visitor& visitor) override;
 };
 
-class NodeDelte: public Node {
+class NodeDelete: public Node {
     public:
-    NodeDelte(Position position);
+    NodeDelete(Position position);
 
     void accept(Visitor& visitor) override;
 };
@@ -441,13 +439,6 @@ class NodeSet: public Node {
 class NodeCreate: public Node {
     public:
     NodeCreate(Position position);
-
-    void accept(Visitor& visitor) override;
-};
-
-class NodeTable: public Node {
-    public:
-    NodeTable(Position position);
 
     void accept(Visitor& visitor) override;
 };
@@ -592,9 +583,9 @@ class NodeGreaterEqual: public Node {
     void accept(Visitor& visitor) override;
 };
 
-class NodePluse: public Node {
+class NodePlus: public Node {
     public:
-    NodePluse(Position position);
+    NodePlus(Position position);
 
     void accept(Visitor& visitor) override;
 };
