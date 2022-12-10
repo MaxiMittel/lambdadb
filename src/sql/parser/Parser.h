@@ -12,15 +12,23 @@
 #include <iostream>
 #include <ostream>
 
+namespace sql::parser {
+
 class Parser {
 private:
-    Lexer& lexer;
+    sql::lexer::Lexer& lexer;
     Repository& repository;
     std::shared_ptr<Node> root;
     bool success = true;
 
+    std::shared_ptr<Node> parse_stmt();
+    std::shared_ptr<Node> parse_select_stmt();
+
+    std::shared_ptr<Node> parse_select_list();
+    std::shared_ptr<Node> parse_select_list_item();
+
 public:
-    Parser(Lexer& lexer, Repository& repository);
+    Parser(sql::lexer::Lexer& lexer, Repository& repository);
 
     /**
      * Parses the lexer input and creates a syntax tree
@@ -40,5 +48,6 @@ public:
     */
     std::shared_ptr<Node> getRoot();
 };
+}
 
 #endif //LAMBDADB_PARSER_H

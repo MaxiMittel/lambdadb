@@ -1,6 +1,8 @@
 #include "Lexer.h"
 #include <iostream>
 
+using namespace sql::lexer;
+
 Lexer::Lexer(Repository& repository) : repository(repository) {
     keywords["SELECT"] = TokenType::SELECT;
     keywords["FROM"] = TokenType::FROM;

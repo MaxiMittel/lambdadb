@@ -10,6 +10,7 @@
 #include <string_view>
 #include "../code/Repository.h"
 
+namespace sql::lexer {
 
 enum TokenType {
     // Other
@@ -78,5 +79,7 @@ class Token {
         return os;
     }
 };
+
+}
 
 #endif // LAMBDADB_TOKEN_H

@@ -5,6 +5,8 @@
 #include "Node.h"
 #include "Visitor.h"
 
+using namespace sql::parser;
+
 Node::Node(NodeType type, Position position): type(type), position(position) {}
 
 Position Node::getPosition() const {

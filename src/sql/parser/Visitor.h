@@ -7,6 +7,8 @@
 
 #include "Node.h"
 
+namespace sql::parser {
+
 class Visitor {
     public:
         virtual void visit(const NodeStmt& node) = 0;
@@ -71,5 +73,7 @@ class Visitor {
         virtual void visit(const NodeLiteral& node) = 0;
         virtual void visit(const NodeIdentifier& node) = 0;
 };
+
+} // namespace sql::parser
 
 #endif //LAMBDADB_PARSER_VISITOR_H

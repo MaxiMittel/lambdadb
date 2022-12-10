@@ -7,7 +7,10 @@
 
 #include <memory>
 #include <string_view>
+#include <vector>
 #include "../code/Repository.h"
+
+namespace sql::parser {
 
 class Visitor;
 
@@ -236,8 +239,7 @@ class NodeSelectList: public Node {
     std::shared_ptr<Node> asteriks = nullptr;
 
     // Or
-    std::shared_ptr<Node> select_item = nullptr;
-    std::shared_ptr<Node> select_list = nullptr; // TODO: Check if this is correct
+    std::vector<std::shared_ptr<Node>> select_list_items;
 
     void accept(Visitor& visitor) override;
 };
@@ -640,6 +642,6 @@ class NodeIdentifier: public Node {
 
     void accept(Visitor& visitor) override;
 };
-
+} // namespace parser
 
 #endif //LAMBDADB_PARSER_NODE_H

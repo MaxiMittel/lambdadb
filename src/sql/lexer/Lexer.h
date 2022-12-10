@@ -9,6 +9,7 @@
 #include "Token.h"
 #include <map>
 
+namespace sql::lexer {
 
 class Lexer {
 private:
@@ -72,6 +73,6 @@ public:
     */
     bool has_next_token();
 };
-
+} // namespace sql::lexer
 
 #endif // LAMBDADB_LEXER_H

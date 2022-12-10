@@ -8,6 +8,7 @@
 //using json = nlohmann::json;
 #include "src/sql/lexer/Lexer.h"
 #include "src/sql/code/Repository.h"
+#include "src/sql/parser/Parser.h"
 
 int main() {
     /*Server server(4000, "0.0.0.0");
@@ -59,13 +60,18 @@ int main() {
     } // The SDK must be shutdown before the application terminates.
     Aws::ShutdownAPI(options);*/
 
-    Repository repo("SELECT name AS vorname, 5 FROM user WHERE age > 20;");
-    Lexer lexer(repo);
+    Repository repo("SELECT name AS vorname FROM user;");
+    sql::lexer::Lexer lexer(repo);
 
-    while (lexer.has_next_token()) {
+    /*while (lexer.has_next_token()) {
         Token token = lexer.next();
         std::cout << token << std::endl;
-    }
+    }*/
+
+    sql::parser::Parser parser(lexer, repo);
+    parser.parse();
+
+    parser.print(std::cout);
 
     return 0;
 }
