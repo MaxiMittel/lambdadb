@@ -18,7 +18,7 @@ set(BUILD_SHARED_LIBS ON CACHE STRING "Link to shared libraries by default.")
 
 #Load required services/packages: This basic example uses S3.
 find_package(AWSSDK REQUIRED COMPONENTS s3)
-add_executable(${PROJECT_NAME} main.cpp src/net/Client.cpp src/net/Client.h src/net/Server.cpp src/net/Server.h src/db/Table.cpp src/db/Table.h src/db/OffsetMap.cpp src/db/OffsetMap.h src/db/Database.cpp src/db/Database.h src/db/DataType.h src/storage/StorageService.cpp src/storage/StorageService.h src/sql/lexer/Lexer.cpp src/sql/lexer/Lexer.h src/sql/lexer/Token.cpp src/sql/lexer/Token.h src/sql/code/Repository.cpp src/sql/code/Repository.h src/sql/parser/Node.cpp src/sql/parser/Node.h src/sql/parser/Visitor.h src/sql/parser/PrintVisitor.cpp src/sql/parser/PrintVisitor.h src/sql/parser/Parser.cpp src/sql/parser/Parser.h)
+add_executable(${PROJECT_NAME} main.cpp src/net/Client.cpp src/net/Client.h src/net/Server.cpp src/net/Server.h src/db/Table.cpp src/db/Table.h src/db/EvaluationTable.cpp src/db/EvaluationTable.h src/db/OffsetMap.cpp src/db/OffsetMap.h src/db/Database.cpp src/db/Database.h src/db/DataType.h src/storage/StorageService.cpp src/storage/StorageService.h src/sql/lexer/Lexer.cpp src/sql/lexer/Lexer.h src/sql/lexer/Token.cpp src/sql/lexer/Token.h src/sql/code/Repository.cpp src/sql/code/Repository.h src/sql/parser/Node.cpp src/sql/parser/Node.h src/sql/parser/Visitor.h src/sql/parser/PrintVisitor.cpp src/sql/parser/PrintVisitor.h src/sql/parser/Parser.cpp src/sql/parser/Parser.h)
 
 #Windows: This 'if' clause copies the SDK libraries from the installation location to the place where 
 #  this project's executable is located.  Without this you'll need to copy the install 
