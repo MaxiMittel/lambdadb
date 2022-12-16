@@ -13,8 +13,17 @@ class EvaluationTable {
     std::vector<std::vector<std::shared_ptr<DataEntryBase>>> items;
 
     public:
-
+    /**
+     * Creates a new evaluation table
+     * @param columns Columns of the table
+     * @param items Items of the table
+     */
     EvaluationTable(std::vector<Column> columns, std::vector<std::vector<std::shared_ptr<DataEntryBase>>> items);
+
+    /**
+     * Creates a new evaluation table
+     */
+    EvaluationTable();
 
     /**
      * Returns the columns of the table

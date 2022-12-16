@@ -14,6 +14,15 @@ Database &Evaluator::getDatabase() const {
 }
 
 EvaluationTable Evaluator::evaluate() {
+    this->evaluationTable = std::make_shared<EvaluationTable>();
     ast.getRoot()->evaluate(*this);
     return *evaluationTable;
+}
+
+std::shared_ptr<EvaluationTable> Evaluator::getEvaluationTable() const {
+    return evaluationTable;
+}
+
+void Evaluator::setEvaluationTable(std::shared_ptr<EvaluationTable> evaluationTable) {
+    this->evaluationTable = evaluationTable;
 }

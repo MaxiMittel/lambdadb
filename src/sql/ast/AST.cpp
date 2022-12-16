@@ -3,6 +3,7 @@
 //
 
 #include "AST.h"
+#include "PrintVisitor.h"
 #include <cassert>
 
 using namespace sql::ast;
@@ -17,6 +18,18 @@ bool AST::analyze() {
     assert(parser.getRoot()->getType() == parser::NodeType::STMT);
     root = analyzeStatement((parser::NodeStmt*) parser.getRoot().get());
     return success;
+}
+
+void AST::print(std::ostream &out) {
+    PrintVisitor visitor(out);
+
+    out << "digraph AST {" << std::endl;
+    root->accept(visitor);
+    out << "}" << std::endl;
+}
+
+std::shared_ptr<Node> AST::analyzeStatement(parser::NodeStmt* node) {
+    return analyzeStatement((parser::NodeSelectStmt*) node->select_stmt.get());
 }
 
 std::shared_ptr<Node> AST::analyzeStatement(parser::NodeSelectStmt* node) {

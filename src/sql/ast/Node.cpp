@@ -32,9 +32,9 @@ void Statement::accept(Visitor &visitor) {
     visitor.visit(*this);
 }
 
-EvaluationTable Statement::evaluate(Evaluator &evaluator) {
+void Statement::evaluate(Evaluator &evaluator) {
     // TODO: Handle multiple statements
-    return statements[0]->evaluate(evaluator);
+    statements[0]->evaluate(evaluator);
 }
 
 SelectStatment::SelectStatment(Position position, Repository &repository) : Node(ASTNodeType::SELECT_STATEMENT, position, repository) {}
@@ -59,7 +59,7 @@ void SelectStatment::accept(Visitor &visitor) {
     visitor.visit(*this);
 }
 
-EvaluationTable SelectStatment::evaluate(Evaluator &evaluator) {
+void SelectStatment::evaluate(Evaluator &evaluator) {
     for (auto &table : tables) {
         std::shared_ptr<Table> tableRef = evaluator.getDatabase().getTable(table.name);
         
@@ -68,15 +68,17 @@ EvaluationTable SelectStatment::evaluate(Evaluator &evaluator) {
             evaluator.getEvaluationTable().get()->setItems(tableRef->getItems());
         } else {
             // Merge tables
-            std::ranges::copy(evaluator.getEvaluationTable().get()->getColumns(), std::back_inserter(tableRef->getColumns()));
+            std::vector<Column> newColumns;
+            newColumns.insert(newColumns.end(), evaluator.getEvaluationTable().get()->getColumns().begin(), evaluator.getEvaluationTable().get()->getColumns().end());
+            newColumns.insert(newColumns.end(), tableRef->getColumns().begin(), tableRef->getColumns().end());
             
             // Cross join
-            std::vector<std::vector<DataEntryBase>> newItems;
+            std::vector<std::vector<std::shared_ptr<DataEntryBase>>> newItems;
             for (auto &item1 : evaluator.getEvaluationTable().get()->getItems()) {
                 for (auto &item2 : tableRef->getItems()) {
-                    std::vector<DataEntryBase> newItem;
-                    std::ranges::copy(item1, std::back_inserter(newItem));
-                    std::ranges::copy(item2, std::back_inserter(newItem));
+                    std::vector<std::shared_ptr<DataEntryBase>> newItem;
+                    newItem.insert(newItem.end(), item1.begin(), item1.end());
+                    newItem.insert(newItem.end(), item2.begin(), item2.end());
                     newItems.push_back(newItem);
                 }
             }

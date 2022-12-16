@@ -15,6 +15,10 @@ bool Parser::parse() {
     return success;
 }
 
+std::shared_ptr<Node> Parser::getRoot() const {
+    return root;
+}
+
 void Parser::print(std::ostream& out) {
     PrintVisitor visitor(out);
 

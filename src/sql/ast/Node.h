@@ -80,9 +80,8 @@ public:
     /**
      * Evaluates the node with the given context and returns the evaluation table
      * @param context Evaluation context
-     * @return Evaluation table
     */
-    virtual EvaluationTable evaluate(Evaluator& context) = 0;
+    virtual void evaluate(Evaluator& context) = 0;
 };
 
 class Statement : public Node {
@@ -98,7 +97,7 @@ public:
 
     void accept(Visitor &visitor) override;
 
-    EvaluationTable evaluate(Evaluator& context) override;
+    void evaluate(Evaluator& context) override;
 };
 
 class SelectStatment : public Node {
@@ -119,7 +118,7 @@ public:
 
     void accept(Visitor &visitor) override;
 
-    EvaluationTable evaluate(Evaluator& context) override;
+    void evaluate(Evaluator& context) override;
 };
 
 } // namespace sql::ast

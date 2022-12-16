@@ -46,7 +46,7 @@ public:
      * Returns the root node of the syntax tree
      * @return the root node
     */
-    std::shared_ptr<Node> getRoot();
+    std::shared_ptr<Node> getRoot() const;
 };
 }
 

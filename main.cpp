@@ -67,7 +67,7 @@ int main()
     Aws::InitAPI(options);
     {
 
-        Repository repo("SELECT name AS vorname FROM user;");
+        Repository repo("SELECT vorname FROM user;");
         sql::lexer::Lexer lexer(repo);
 
         /*while (lexer.has_next_token()) {
@@ -77,6 +77,8 @@ int main()
 
         sql::parser::Parser parser(lexer, repo);
         parser.parse();
+
+        parser.print(std::cout);
 
         sql::ast::AST ast(parser, repo);
         ast.analyze();

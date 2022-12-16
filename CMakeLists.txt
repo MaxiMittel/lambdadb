@@ -18,8 +18,8 @@ set(BUILD_SHARED_LIBS ON CACHE STRING "Link to shared libraries by default.")
 
 #Load required services/packages: This basic example uses S3.
 find_package(AWSSDK REQUIRED COMPONENTS s3)
-file( GLOB LIB_SOURCES src/**/**/*.cpp )
-file( GLOB LIB_HEADERS src/**/**/*.h )
+file( GLOB_RECURSE  LIB_SOURCES src/*.cpp )
+file( GLOB_RECURSE  LIB_HEADERS src/*.h )
 add_executable(${PROJECT_NAME} main.cpp ${LIB_SOURCES} ${LIB_HEADERS})
 
 #Windows: This 'if' clause copies the SDK libraries from the installation location to the place where 
