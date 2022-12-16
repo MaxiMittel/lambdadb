@@ -44,9 +44,9 @@ std::shared_ptr<Node> AST::analyzeStatement(parser::NodeSelectStmt* node) {
             columns.emplace_back(ColumnRef{true, "", "" ,""});
         } else {
             for (auto& select_list_item : selectList->select_list_items) {
-                parser::NodeSelectListItem* selectListItem = (parser::NodeSelectListItem*) select_list_item.get();
-                parser::NodeIdentifier* expr = (parser::NodeIdentifier*) selectListItem->expr.get();
-                parser::NodeIdentifier* alias = (parser::NodeIdentifier*) selectListItem->identifier.get();
+                parser::NodeSelectListItem* selectListItem = static_cast<parser::NodeSelectListItem*>(select_list_item.get());
+                parser::NodeIdentifier* expr = static_cast<parser::NodeIdentifier*>(selectListItem->expr.get());
+                parser::NodeIdentifier* alias = static_cast<parser::NodeIdentifier*>(selectListItem->identifier.get());
 
                 std::string name = std::string(expr->value);
 

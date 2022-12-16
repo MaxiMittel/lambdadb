@@ -87,7 +87,7 @@ std::shared_ptr<Node> Parser::parse_select_list_item() {
     auto token = lexer.next();
     std::shared_ptr<NodeSelectListItem> select_list_item = std::make_shared<NodeSelectListItem>(token.position);
 
-    select_list_item->identifier = std::make_shared<NodeIdentifier>(token.position, token.value);
+    select_list_item->expr = std::make_shared<NodeIdentifier>(token.position, token.value);
 
     token = lexer.peek_next();
     if (token.type == TokenType::AS) {
