@@ -87,14 +87,14 @@ public:
 
 class Statement : public Node {
 private:
-    std::vector<Node> statements;
+    std::vector<std::shared_ptr<Node>> statements;
 
 public:
     Statement(Position position, Repository &repository);
 
-    void setStatements(std::vector<Node> statements);
+    void setStatements(std::vector<std::shared_ptr<Node>> statements);
 
-    std::vector<Node> getStatements() const;
+    std::vector<std::shared_ptr<Node>> getStatements() const;
 
     void accept(Visitor &visitor) override;
 

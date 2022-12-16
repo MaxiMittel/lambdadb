@@ -14,7 +14,6 @@ std::vector<std::vector<std::shared_ptr<DataEntryBase>>> EvaluationTable::getIte
     return items;
 }
 
-
 void EvaluationTable::setItems(const std::vector<std::vector<std::shared_ptr<DataEntryBase>>> &items) {
     this->items = items;
 }

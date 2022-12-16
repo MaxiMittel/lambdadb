@@ -51,42 +51,25 @@ std::vector<Column> Table::getColumns() const {
 std::vector<std::vector<std::shared_ptr<DataEntryBase>>> Table::getItems() const {
     std::vector<std::vector<std::shared_ptr<DataEntryBase>>> items;
 
-    // Fill the items vector with columns
-    for (size_t i = 0; i < columns.size(); i++) {
-        items.emplace_back(std::vector<std::shared_ptr<DataEntryBase>>());
-    }
-
     // Load the items from the storage
     auto content = storageService.readObject(DATA_KEY);
 
     for (size_t i = 0; i < content.size; i += item_length) {
         size_t offset = i;
+        std::vector<std::shared_ptr<DataEntryBase>> item;
         for (size_t column_index = 0; column_index < columns.size(); column_index++) {
             switch (columns[column_index].type) {
                 case DataType::INTEGER:
-                    items[column_index].emplace_back(std::make_shared<DataEntry<int32_t>>(*(int32_t*)(content.data + offset), DataType::INTEGER));
+                    item.emplace_back(std::make_shared<DataEntry<int32_t>>(*(int32_t*)(content.data + offset), DataType::INTEGER));
                     break;
                 case DataType::VARCHAR:
-                    items[column_index].emplace_back(std::make_shared<DataEntry<std::string>>(std::string(reinterpret_cast<char*>(content.data + offset), columns[column_index].size), DataType::VARCHAR));
+                    item.emplace_back(std::make_shared<DataEntry<std::string>>(std::string(reinterpret_cast<char*>(content.data + offset), columns[column_index].size), DataType::VARCHAR));
                     break;
             }
             offset += columns[column_index].size;
         }
-    }
-
-    // Print the items
-    for (size_t i = 0; i < items[0].size(); i++) {
-        for (size_t j = 0; j < items.size(); j++) {
-            switch (columns[j].type) {
-                case DataType::INTEGER:
-                    std::cout << static_cast<DataEntry<int32_t>*>(items[j][i].get())->getValue() << " ";
-                    break;
-                case DataType::VARCHAR:
-                    std::cout << static_cast<DataEntry<std::string>*>(items[j][i].get())->getValue() << " ";
-                    break;
-            }
-        }
-        std::cout << std::endl;
+        
+        items.emplace_back(item);
     }
 
     return items;

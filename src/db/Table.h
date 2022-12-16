@@ -68,6 +68,12 @@ public:
     /*[[nodiscard]]*/ std::vector<std::vector<std::shared_ptr<DataEntryBase>>> getItems() const;
 
     /**
+     * Returns the row count of the table
+     * @return Row count of the table
+     */
+    [[nodiscard]] size_t getRowCount() const;
+
+    /**
      * Inserts a new item into the table
      * @param item The item to insert
      */

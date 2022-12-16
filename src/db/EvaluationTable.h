@@ -33,6 +33,18 @@ class EvaluationTable {
      * @param items Items of the table
      */
     void setItems(const std::vector<std::vector<std::shared_ptr<DataEntryBase>>> &items);
+
+    /**
+     * Set the columns of the table
+     * @param columns Columns of the table
+     */
+    void setColumns(const std::vector<Column> &columns);
+
+    /**
+     * Returns the number of rows
+     * @return Number of rows
+     */
+    [[nodiscard]] size_t getRowCount() const;
 };
 
 #endif //LAMBDADB_EVALUATION_TABLE_H
