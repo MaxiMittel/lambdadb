@@ -54,6 +54,12 @@ class EvaluationTable {
      * @return Number of rows
      */
     [[nodiscard]] size_t getRowCount() const;
+
+    /**
+     * Prints the table
+     * @param out Output stream
+     */
+    void print(std::ostream& out);
 };
 
 #endif //LAMBDADB_EVALUATION_TABLE_H

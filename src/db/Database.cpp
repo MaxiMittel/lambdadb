@@ -7,12 +7,13 @@
 using json = nlohmann::json;
 
 Database::Database(std::string name, StorageService& storageService): name(std::move(name)), storageService(storageService) {
-    if(!storageService.exists(this->name)) {
+    if(!storageService.exists(this->name + "/config.json")) {
+        std::cout << "Creating database " << this->name << std::endl;
         std::string empty_config = R"({
             "name": ")" + this->name + R"(",
             "tables": []
         })";
-        storageService.writeObject(this->name, Buffer{(uint8_t*)empty_config.c_str(), empty_config.length()});
+        storageService.writeObject(this->name + "/config.json", Buffer{(uint8_t*)empty_config.c_str(), empty_config.length()});
     }
 
     auto content = storageService.readObject(this->name + "/config.json");

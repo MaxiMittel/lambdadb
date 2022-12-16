@@ -27,3 +27,26 @@ void EvaluationTable::setColumns(const std::vector<Column> &columns) {
 size_t EvaluationTable::getRowCount() const {
     return items.size();
 }
+
+void EvaluationTable::print(std::ostream &out) {
+    // Print the header
+    for (const auto &column : columns) {
+        out << column.name << " ";
+    }
+    out << std::endl;
+
+    // Print the items
+    for (const auto &item : items) {
+        for (size_t i = 0; i < columns.size(); i++) {
+            switch (columns[i].type) {
+                case DataType::INTEGER:
+                    std::cout << static_cast<DataEntry<int32_t>*>(item[i].get())->getValue() << " ";
+                    break;
+                case DataType::VARCHAR:
+                    std::cout << static_cast<DataEntry<std::string>*>(item[i].get())->getValue() << " ";
+                    break;
+            }
+        }
+        out << std::endl;
+    }
+}

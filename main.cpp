@@ -10,6 +10,7 @@
 #include "src/sql/code/Repository.h"
 #include "src/sql/parser/Parser.h"
 #include "src/sql/ast/AST.h"
+#include "src/sql/ast/Evaluator.h"
 
 int main()
 {
@@ -85,6 +86,15 @@ int main()
 
         ast.print(std::cout);
 
+        std::string database = "cpp_test";
+        StorageService storageService("serverless-db-9umfiaj");
+        Database db(database, storageService);
+
+        sql::ast::Evaluator evalutor(ast, db);
+
+        EvaluationTable result = evalutor.evaluate();
+
+        result.print(std::cout);
     } // The SDK must be shutdown before the application terminates.
     Aws::ShutdownAPI(options);
 
