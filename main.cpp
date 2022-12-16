@@ -4,13 +4,15 @@
 #include "src/net/Server.h"
 #include "src/storage/StorageService.h"
 #include "src/db/Table.h"
-//#include <nlohmann/json.hpp>
-//using json = nlohmann::json;
+// #include <nlohmann/json.hpp>
+// using json = nlohmann::json;
 #include "src/sql/lexer/Lexer.h"
 #include "src/sql/code/Repository.h"
 #include "src/sql/parser/Parser.h"
+#include "src/sql/ast/AST.h"
 
-int main() {
+int main()
+{
     /*Server server(4000, "0.0.0.0");
     server.bind();
 
@@ -60,18 +62,29 @@ int main() {
     } // The SDK must be shutdown before the application terminates.
     Aws::ShutdownAPI(options);*/
 
-    Repository repo("SELECT name AS vorname FROM user;");
-    sql::lexer::Lexer lexer(repo);
+    Aws::SDKOptions options;
+    options.loggingOptions.logLevel = Aws::Utils::Logging::LogLevel::Info;
+    Aws::InitAPI(options);
+    {
 
-    /*while (lexer.has_next_token()) {
-        Token token = lexer.next();
-        std::cout << token << std::endl;
-    }*/
+        Repository repo("SELECT name AS vorname FROM user;");
+        sql::lexer::Lexer lexer(repo);
 
-    sql::parser::Parser parser(lexer, repo);
-    parser.parse();
+        /*while (lexer.has_next_token()) {
+            Token token = lexer.next();
+            std::cout << token << std::endl;
+        }*/
 
-    parser.print(std::cout);
+        sql::parser::Parser parser(lexer, repo);
+        parser.parse();
+
+        sql::ast::AST ast(parser, repo);
+        ast.analyze();
+
+        ast.print(std::cout);
+
+    } // The SDK must be shutdown before the application terminates.
+    Aws::ShutdownAPI(options);
 
     return 0;
 }

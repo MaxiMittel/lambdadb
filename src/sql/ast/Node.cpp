@@ -71,10 +71,10 @@ EvaluationTable SelectStatment::evaluate(Evaluator &evaluator) {
             std::ranges::copy(evaluator.getEvaluationTable().get()->getColumns(), std::back_inserter(tableRef->getColumns()));
             
             // Cross join
-            std::vector<std::vector<DataEntry>> newItems;
+            std::vector<std::vector<DataEntryBase>> newItems;
             for (auto &item1 : evaluator.getEvaluationTable().get()->getItems()) {
                 for (auto &item2 : tableRef->getItems()) {
-                    std::vector<DataEntry> newItem;
+                    std::vector<DataEntryBase> newItem;
                     std::ranges::copy(item1, std::back_inserter(newItem));
                     std::ranges::copy(item2, std::back_inserter(newItem));
                     newItems.push_back(newItem);

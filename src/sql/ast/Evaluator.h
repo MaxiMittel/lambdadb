@@ -8,9 +8,10 @@
 #include <vector>
 #include "../../db/Database.h"
 #include "../../db/EvaluationTable.h"
-#include "AST.h"
 
 namespace sql::ast {
+
+class AST;
 
 class Evaluator {
 private:

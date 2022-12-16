@@ -3,6 +3,7 @@
 //
 
 #include "Evaluator.h"
+#include "AST.h"
 
 using namespace sql::ast;
 
@@ -13,5 +14,6 @@ Database &Evaluator::getDatabase() const {
 }
 
 EvaluationTable Evaluator::evaluate() {
-    return ast.getRoot()->accept(*this);
+    ast.getRoot()->evaluate(*this);
+    return *evaluationTable;
 }
