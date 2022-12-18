@@ -23,9 +23,36 @@ private:
 
     std::shared_ptr<Node> parse_stmt();
     std::shared_ptr<Node> parse_select_stmt();
+    std::shared_ptr<Node> parse_insert_stmt();
+    std::shared_ptr<Node> parse_delete_stmt();
+    std::shared_ptr<Node> parse_update_stmt();
+    std::shared_ptr<Node> parse_create_stmt();
+    std::shared_ptr<Node> parse_drop_stmt();
+    std::shared_ptr<Node> parse_alter_stmt();
 
     std::shared_ptr<Node> parse_select_list();
     std::shared_ptr<Node> parse_select_list_item();
+    std::shared_ptr<Node> parse_table_list();
+    std::shared_ptr<Node> parse_table_list_item();
+    std::shared_ptr<Node> parse_join_clause();
+    std::shared_ptr<Node> parse_where_clause();
+    std::shared_ptr<Node> parse_order_clause();
+    std::shared_ptr<Node> parse_limit_clause();
+    std::shared_ptr<Node> parse_expr();
+    std::shared_ptr<Node> parse_unary_expr();
+    std::shared_ptr<Node> parse_primary_expr();
+    std::shared_ptr<Node> parse_order_list();
+    std::shared_ptr<Node> parse_order_list_item();
+    std::shared_ptr<Node> parse_column_list();
+    std::shared_ptr<Node> parse_column_list_item();
+    std::shared_ptr<Node> parse_value_list();
+    std::shared_ptr<Node> parse_value_list_item();
+    std::shared_ptr<Node> parse_assignment_list();
+    std::shared_ptr<Node> parse_assignment_list_item();
+    std::shared_ptr<Node> parse_column_def();
+    std::shared_ptr<Node> parse_column_def_list();
+
+    void assertTokenType(sql::lexer::TokenType expected, sql::lexer::TokenType actual, Position position);
 
 public:
     Parser(sql::lexer::Lexer& lexer, Repository& repository);

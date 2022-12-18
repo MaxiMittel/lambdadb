@@ -68,7 +68,7 @@ int main()
     Aws::InitAPI(options);
     {
 
-        Repository repo("SELECT vorname FROM user;");
+        Repository repo("SELECT vorname AS name, age FROM user LEFT JOIN posts ON post = user;");
         sql::lexer::Lexer lexer(repo);
 
         /*while (lexer.has_next_token()) {
@@ -81,7 +81,7 @@ int main()
 
         parser.print(std::cout);
 
-        sql::ast::AST ast(parser, repo);
+        /*sql::ast::AST ast(parser, repo);
         ast.analyze();
 
         ast.print(std::cout);
@@ -94,7 +94,7 @@ int main()
 
         EvaluationTable result = evalutor.evaluate();
 
-        result.print(std::cout);
+        result.print(std::cout);*/
     } // The SDK must be shutdown before the application terminates.
     Aws::ShutdownAPI(options);
 

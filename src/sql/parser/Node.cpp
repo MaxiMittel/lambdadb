@@ -77,33 +77,75 @@ void NodeSelectListItem::accept(Visitor& visitor) {
     visitor.visit(*this);
 }
 
+NodeTableList::NodeTableList(Position position): Node(NodeType::TABLE_LIST, position) {}
+
+void NodeTableList::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
+NodeTableListItem::NodeTableListItem(Position position): Node(NodeType::TABLE_LIST_ITEM, position) {}
+
+void NodeTableListItem::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
+NodeJoinClause::NodeJoinClause(Position position): Node(NodeType::JOIN_CLAUSE, position) {}
+
+void NodeJoinClause::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
+NodeOrderListItem::NodeOrderListItem(Position position): Node(NodeType::ORDER_LIST_ITEM, position) {}
+
+void NodeOrderListItem::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
 NodeWhereClause::NodeWhereClause(Position position): Node(NodeType::WHERE_CLAUSE, position) {}
 
 void NodeWhereClause::accept(Visitor& visitor) {
     visitor.visit(*this);
 }
 
-NodeOrderByClause::NodeOrderByClause(Position position): Node(NodeType::ORDER_BY_CLAUSE, position) {}
+NodeOrderClause::NodeOrderClause(Position position): Node(NodeType::ORDER_CLAUSE, position) {}
 
-void NodeOrderByClause::accept(Visitor& visitor) {
+void NodeOrderClause::accept(Visitor& visitor) {
     visitor.visit(*this);
 }
 
-NodeOrderByList::NodeOrderByList(Position position): Node(NodeType::ORDER_BY_LIST, position) {}
+NodeOn::NodeOn(Position position): Node(NodeType::ON, position) {}
 
-void NodeOrderByList::accept(Visitor& visitor) {
+void NodeOn::accept(Visitor& visitor) {
     visitor.visit(*this);
 }
 
-NodeOrderByItem::NodeOrderByItem(Position position): Node(NodeType::ORDER_BY_ITEM, position) {}
+NodeOrderList::NodeOrderList(Position position): Node(NodeType::ORDER_BY_LIST, position) {}
 
-void NodeOrderByItem::accept(Visitor& visitor) {
+void NodeOrderList::accept(Visitor& visitor) {
     visitor.visit(*this);
 }
 
 NodeLimitClause::NodeLimitClause(Position position): Node(NodeType::LIMIT_CLAUSE, position) {}
 
 void NodeLimitClause::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
+NodeExpression::NodeExpression(Position position): Node(NodeType::EXPRESSION, position) {}
+
+void NodeExpression::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
+NodeUnaryExpression::NodeUnaryExpression(Position position): Node(NodeType::UNARY_EXPRESSION, position) {}
+
+void NodeUnaryExpression::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
+NodePrimaryExpression::NodePrimaryExpression(Position position): Node(NodeType::PRIMARY_EXPRESSION, position) {}
+
+void NodePrimaryExpression::accept(Visitor& visitor) {
     visitor.visit(*this);
 }
 
@@ -125,9 +167,21 @@ void NodeColumnDef::accept(Visitor& visitor) {
     visitor.visit(*this);
 }
 
-NodeExprList::NodeExprList(Position position): Node(NodeType::EXPR_LIST, position) {}
+NodeValueList::NodeValueList(Position position): Node(NodeType::VALUE_LIST, position) {}
 
-void NodeExprList::accept(Visitor& visitor) {
+void NodeValueList::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
+NodeColumnList::NodeColumnList(Position position): Node(NodeType::COLUMN_LIST, position) {}
+
+void NodeColumnList::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
+NodeAssignmentList::NodeAssignmentList(Position position): Node(NodeType::ASSIGNMENT_LIST, position) {}
+
+void NodeAssignmentList::accept(Visitor& visitor) {
     visitor.visit(*this);
 }
 
@@ -293,6 +347,12 @@ void NodeLimit::accept(Visitor& visitor) {
     visitor.visit(*this);
 }
 
+NodeAnd::NodeAnd(Position position): Node(NodeType::AND, position) {}
+
+void NodeAnd::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
 NodeOr::NodeOr(Position position): Node(NodeType::OR, position) {}
 
 void NodeOr::accept(Visitor& visitor) {
@@ -347,6 +407,12 @@ void NodeMinus::accept(Visitor& visitor) {
     visitor.visit(*this);
 }
 
+NodeDot::NodeDot(Position position): Node(NodeType::DOT, position) {}
+
+void NodeDot::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
 NodeSlash::NodeSlash(Position position): Node(NodeType::SLASH, position) {}
 
 void NodeSlash::accept(Visitor& visitor) {
@@ -368,6 +434,42 @@ void NodeInt::accept(Visitor& visitor) {
 NodeVarchar::NodeVarchar(Position position): Node(NodeType::VARCHAR, position) {}
 
 void NodeVarchar::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
+NodeJoin::NodeJoin(Position position): Node(NodeType::JOIN, position) {}
+
+void NodeJoin::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
+NodeAlter::NodeAlter(Position position): Node(NodeType::ALTER, position) {}
+
+void NodeAlter::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
+NodeLeft::NodeLeft(Position position): Node(NodeType::LEFT, position) {}
+
+void NodeLeft::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
+NodeRight::NodeRight(Position position): Node(NodeType::RIGHT, position) {}
+
+void NodeRight::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
+NodeInner::NodeInner(Position position): Node(NodeType::INNER, position) {}
+
+void NodeInner::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
+NodeFull::NodeFull(Position position): Node(NodeType::FULL, position) {}
+
+void NodeFull::accept(Visitor& visitor) {
     visitor.visit(*this);
 }
 

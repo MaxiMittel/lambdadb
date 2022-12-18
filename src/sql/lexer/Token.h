@@ -39,6 +39,19 @@ enum TokenType {
     AS,
     CREATE,
     TABLE,
+    DROP,
+    ALTER,
+    LEFT,
+    RIGHT,
+    INNER,
+    FULL,
+    ORDER,
+    BY,
+    LIMIT,
+    ASC,
+    DESC,
+    JOIN,
+    ON,
 
     // Symbols
     TERMINATOR,
@@ -64,6 +77,9 @@ enum TokenType {
     PARENTHESIS_CLOSE,
     BRACE_OPEN,
     BRACE_CLOSE,
+
+    INTEGER,
+    VARCHAR
 };
 
 class Token {

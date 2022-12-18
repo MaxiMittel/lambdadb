@@ -63,9 +63,9 @@ std::shared_ptr<Node> AST::analyzeStatement(parser::NodeSelectStmt* node) {
 
     // Analyze the table name
     std::vector<TableRef> tables;
-    parser::NodeIdentifier* tableName = (parser::NodeIdentifier*) node->table_name.get();
+    //parser::NodeIdentifier* tableName = (parser::NodeIdentifier*) node->table_name.get();
 
-    tables.emplace_back(TableRef{std::string(tableName->value), ""});
+    //tables.emplace_back(TableRef{std::string(tableName->value), ""});
     selectStatement->setTables(tables);
 
     return selectStatement;

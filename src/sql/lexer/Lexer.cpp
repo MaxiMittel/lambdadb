@@ -19,6 +19,19 @@ Lexer::Lexer(Repository& repository) : repository(repository) {
     keywords["AS"] = TokenType::AS;
     keywords["CREATE"] = TokenType::CREATE;
     keywords["TABLE"] = TokenType::TABLE;
+    keywords["DROP"] = TokenType::DROP;
+    keywords["ALTER"] = TokenType::ALTER;
+    keywords["LEFT"] = TokenType::LEFT;
+    keywords["RIGHT"] = TokenType::RIGHT;
+    keywords["INNER"] = TokenType::INNER;
+    keywords["FULL"] = TokenType::FULL;
+    keywords["ORDER"] = TokenType::ORDER;
+    keywords["BY"] = TokenType::BY;
+    keywords["LIMIT"] = TokenType::LIMIT;
+    keywords["ASC"] = TokenType::ASC;
+    keywords["DESC"] = TokenType::DESC;
+    keywords["JOIN"] = TokenType::JOIN;
+    keywords["ON"] = TokenType::ON;
 }
 
 bool Lexer::is_whitespace(char c) {

@@ -29,7 +29,7 @@ make install
     
 ```ts
 stmt = select_stmt | insert_stmt | delete_stmt | update_stmt | create_stmt | drop_stmt | alter_stmt;
-select_stmt = "SELECT" select_list "FROM" table_name [where_clause] [order_by_clause] [limit_clause];
+select_stmt = "SELECT" select_list "FROM" table_list [join_clause] [where_clause] [order_by_clause] [limit_clause];
 select_list = "*" | select_list_item {"," select_list_item};
 select_list_item = expr ["AS" ident];
 insert_stmt = "INSERT INTO" table_name ["(" column_list ")"] "VALUES" "(" expr_list ")";
@@ -43,12 +43,20 @@ column_type = "INT" | "VARCHAR";
 column_constraint = "PRIMARY KEY" | "NOT NULL";
 drop_stmt = "DROP TABLE" table_name;
 alter_stmt = "ALTER TABLE" table_name "ADD" column_def;
+join_clause = join_type "JOIN" table_name "ON" expr;
+join_type = "INNER" | "LEFT" | "RIGHT" | "FULL";
+table_list = table_name {"," table_name};
+table_name = ident ident;
 where_clause = "WHERE" expr;
 order_by_clause = "ORDER BY" order_by_list;
 order_by_list = order_by_item {"," order_by_item};
 order_by_item = expr ["ASC" | "DESC"];
 limit_clause = "LIMIT" expr;
-expr = expr "AND" expr | expr "OR" expr | "NOT" expr | expr "=" expr | expr "<>" expr | expr "<" expr | expr "<=" expr | expr ">" expr | expr ">=" expr | expr "+" expr | expr "-" expr | expr "*" expr | expr "/" expr | expr "%" expr | "-" expr | "+" expr | "(" expr ")" | ident | literal_value;
+
+expr = expr ("=" | "<>" | "<" | "<=" | ">" | ">=" | "AND" | "OR" | "LIKE") expr
+unary_expr = ("+" | "-" | "NOT") primary_expr;
+primary_expr = literal_value | ident | ident "." ident | "(" expr ")";
+
 ident = [a-zA-Z_][a-zA-Z0-9_]*;
 literal_value = [0-9]+ | [0-9]*.[0-9]+ | "'" [^']* "'" | "NULL";
 ```

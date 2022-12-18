@@ -27,7 +27,7 @@ enum NodeType {
     SELECT_LIST,
     TABLE_NAME,
     WHERE_CLAUSE,
-    ORDER_BY_CLAUSE,
+    ORDER_CLAUSE,
     LIMIT_CLAUSE,
     SELECT_LIST_ITEM,
     EXPR,
@@ -40,9 +40,15 @@ enum NodeType {
     COLUMN_TYPE,
     COLUMN_CONSTRAINT,
     ORDER_BY_LIST,
-    ORDER_BY_ITEM,
-
-    // TODO: Add expressions
+    ORDER_LIST_ITEM,
+    EXPRESSION,
+    UNARY_EXPRESSION,
+    PRIMARY_EXPRESSION,
+    TABLE_LIST,
+    TABLE_LIST_ITEM,
+    JOIN_CLAUSE,
+    VALUE_LIST,
+    ASSIGNMENT_LIST,
 
     // Terminals
     SELECT,
@@ -74,6 +80,7 @@ enum NodeType {
     DESC,
     LIMIT,
     OR,
+    AND,
     EQUAL,
     NOT_EQUAL,
     LESS,
@@ -84,6 +91,13 @@ enum NodeType {
     MINUS,
     SLASH,
     PERCENT,
+    INNER,
+    LEFT,
+    RIGHT,
+    FULL,
+    JOIN,
+    ON,
+    DOT,
     LITERAL,
     IDENTIFIER,
 
@@ -140,9 +154,10 @@ class NodeSelectStmt: public Node {
     std::shared_ptr<Node> _select = nullptr;
     std::shared_ptr<Node> select_list = nullptr;
     std::shared_ptr<Node> _from = nullptr;
-    std::shared_ptr<Node> table_name = nullptr;
+    std::shared_ptr<Node> table_list = nullptr;
 
     // Optional
+    std::shared_ptr<Node> join_clause = nullptr;
     std::shared_ptr<Node> where_clause = nullptr;
     std::shared_ptr<Node> order_by_clause = nullptr;
     std::shared_ptr<Node> limit_clause = nullptr;
@@ -163,9 +178,9 @@ class NodeInsertStmt: public Node {
     std::shared_ptr<Node> brace_close_1 = nullptr;
     // Optional end
 
-    std::shared_ptr<Node> values = nullptr;
+    std::shared_ptr<Node> _values = nullptr;
     std::shared_ptr<Node> brace_open_2 = nullptr;
-    std::shared_ptr<Node> expr_list = nullptr;
+    std::shared_ptr<Node> values = nullptr;
     std::shared_ptr<Node> brace_close_2 = nullptr;
 
     void accept(Visitor& visitor) override;
@@ -191,8 +206,6 @@ class NodeUpdateStmt: public Node {
     std::shared_ptr<Node> table_name = nullptr;
     std::shared_ptr<Node> _set = nullptr;
     std::shared_ptr<Node> update_list = nullptr;
-
-    // Optional
     std::shared_ptr<Node> where_clause = nullptr;
 
     void accept(Visitor& visitor) override;
@@ -204,9 +217,9 @@ class NodeCreateStmt: public Node {
     std::shared_ptr<Node> _create = nullptr;
     std::shared_ptr<Node> _table = nullptr;
     std::shared_ptr<Node> table_name = nullptr;
-    std::shared_ptr<Node> brace_open = nullptr;
+    std::shared_ptr<Node> _brace_open = nullptr;
     std::shared_ptr<Node> column_def = nullptr; // TODO: Check if this is correct
-    std::shared_ptr<Node> brace_close = nullptr;
+    std::shared_ptr<Node> _brace_close = nullptr;
 
     void accept(Visitor& visitor) override;
 };
@@ -256,6 +269,55 @@ class NodeSelectListItem: public Node {
     void accept(Visitor& visitor) override;
 };
 
+class NodeTableList: public Node {
+    public:
+    NodeTableList(Position position);
+    std::vector<std::shared_ptr<Node>> table_list_items;
+
+    void accept(Visitor& visitor) override;
+};
+
+class NodeTableListItem: public Node {
+    public:
+    NodeTableListItem(Position position);
+    std::shared_ptr<Node> table_name = nullptr;
+
+    // Optional
+    std::shared_ptr<Node> as = nullptr;
+
+    void accept(Visitor& visitor) override;
+};
+
+class NodeJoinClause: public Node {
+    public:
+    NodeJoinClause(Position position);
+    std::shared_ptr<Node> join_type = nullptr;
+    std::shared_ptr<Node> _join = nullptr;
+    std::shared_ptr<Node> table_list_item = nullptr;
+    std::shared_ptr<Node> _on = nullptr;
+    std::shared_ptr<Node> expr = nullptr;
+
+    void accept(Visitor& visitor) override;
+};
+
+class NodeOrderList: public Node {
+    public:
+    NodeOrderList(Position position);
+    std::vector<std::shared_ptr<Node>> order_list_items;
+
+    void accept(Visitor& visitor) override;
+};
+
+class NodeOrderListItem: public Node {
+    public:
+    NodeOrderListItem(Position position);
+    std::shared_ptr<Node> expr = nullptr;
+    std::shared_ptr<Node> _asc = nullptr;
+    std::shared_ptr<Node> _desc = nullptr;
+
+    void accept(Visitor& visitor) override;
+};
+
 class NodeWhereClause: public Node {
     public:
     NodeWhereClause(Position position);
@@ -265,33 +327,12 @@ class NodeWhereClause: public Node {
     void accept(Visitor& visitor) override;
 };
 
-class NodeOrderByClause: public Node {
+class NodeOrderClause: public Node {
     public:
-    NodeOrderByClause(Position position);
+    NodeOrderClause(Position position);
     std::shared_ptr<Node> _order = nullptr;
     std::shared_ptr<Node> _by = nullptr;
-    std::shared_ptr<Node> order_by_list = nullptr;
-
-    void accept(Visitor& visitor) override;
-};
-
-class NodeOrderByList: public Node {
-    public:
-    NodeOrderByList(Position position);
-    std::shared_ptr<Node> order_by_item = nullptr;
-    std::shared_ptr<Node> order_by_list = nullptr; // TODO: Check if this is correct
-
-    void accept(Visitor& visitor) override;
-};
-
-class NodeOrderByItem: public Node {
-    public:
-    NodeOrderByItem(Position position);
-    std::shared_ptr<Node> expr = nullptr;
-
-    // Optional
-    std::shared_ptr<Node> _asc = nullptr;
-    std::shared_ptr<Node> _desc = nullptr;
+    std::shared_ptr<Node> order_list = nullptr;
 
     void accept(Visitor& visitor) override;
 };
@@ -305,11 +346,56 @@ class NodeLimitClause: public Node {
     void accept(Visitor& visitor) override;
 };
 
+class NodeExpression: public Node {
+    public:
+    NodeExpression(Position position);
+    std::shared_ptr<Node> left = nullptr;
+    std::shared_ptr<Node> _and = nullptr;
+    std::shared_ptr<Node> _or = nullptr;
+    std::shared_ptr<Node> _lt = nullptr;
+    std::shared_ptr<Node> _gt = nullptr;
+    std::shared_ptr<Node> _eq = nullptr;
+    std::shared_ptr<Node> _neq = nullptr;
+    std::shared_ptr<Node> _lte = nullptr;
+    std::shared_ptr<Node> _gte = nullptr;
+    std::shared_ptr<Node> right = nullptr;
+
+    void accept(Visitor& visitor) override;
+};
+
+class NodeUnaryExpression: public Node {
+    public:
+    NodeUnaryExpression(Position position);
+    std::shared_ptr<Node> _plus = nullptr;
+    std::shared_ptr<Node> _minus = nullptr;
+    std::shared_ptr<Node> _not = nullptr;
+    std::shared_ptr<Node> primary_expr = nullptr;
+
+    void accept(Visitor& visitor) override;
+};
+
+class NodePrimaryExpression: public Node {
+    public:
+    NodePrimaryExpression(Position position);
+    std::shared_ptr<Node> _lparen = nullptr;
+    std::shared_ptr<Node> expr = nullptr;
+    std::shared_ptr<Node> _rparen = nullptr;
+
+    std::shared_ptr<Node> ident1 = nullptr;
+    std::shared_ptr<Node> _dot = nullptr;
+    std::shared_ptr<Node> ident2 = nullptr;
+
+    std::shared_ptr<Node> literal_value = nullptr;
+    std::shared_ptr<Node> identifier = nullptr;
+
+    void accept(Visitor& visitor) override;
+};
+
 class NodeUpdateList: public Node {
     public:
     NodeUpdateList(Position position);
     std::shared_ptr<Node> update_item = nullptr;
-    std::shared_ptr<Node> update_list = nullptr; // TODO: Check if this is correct
+    std::vector<std::shared_ptr<Node>> update_list;
 
     void accept(Visitor& visitor) override;
 };
@@ -337,11 +423,32 @@ class NodeColumnDef: public Node {
     void accept(Visitor& visitor) override;
 };
 
-class NodeExprList: public Node {
+class NodeValueList: public Node {
     public:
-    NodeExprList(Position position);
-    std::shared_ptr<Node> expr = nullptr;
-    std::shared_ptr<Node> expr_list = nullptr; // TODO: Check if this is correct
+    NodeValueList(Position position);
+    std::shared_ptr<Node> _brace_open = nullptr;
+    std::vector<std::shared_ptr<Node>> value_list;
+    std::shared_ptr<Node> _brace_close = nullptr;
+
+    void accept(Visitor& visitor) override;
+};
+
+class NodeColumnList: public Node {
+    public:
+    NodeColumnList(Position position);
+    std::shared_ptr<Node> _brace_open = nullptr;
+    std::vector<std::shared_ptr<Node>> column_list;
+    std::shared_ptr<Node> _brace_close = nullptr;
+
+    void accept(Visitor& visitor) override;
+};
+
+class NodeAssignmentList: public Node {
+    public:
+    NodeAssignmentList(Position position);
+    std::shared_ptr<Node> _brace_open = nullptr;
+    std::vector<std::shared_ptr<Node>> assignment_list;
+    std::shared_ptr<Node> _brace_close = nullptr;
 
     void accept(Visitor& visitor) override;
 };
@@ -536,6 +643,13 @@ class NodeLimit: public Node {
     void accept(Visitor& visitor) override;
 };
 
+class NodeAnd: public Node {
+    public:
+    NodeAnd(Position position);
+
+    void accept(Visitor& visitor) override;
+};
+
 class NodeOr: public Node {
     public:
     NodeOr(Position position);
@@ -599,6 +713,13 @@ class NodeMinus: public Node {
     void accept(Visitor& visitor) override;
 };
 
+class NodeDot: public Node {
+    public:
+    NodeDot(Position position);
+
+    void accept(Visitor& visitor) override;
+};
+
 class NodeSlash: public Node {
     public:
     NodeSlash(Position position);
@@ -623,6 +744,55 @@ class NodeInt: public Node {
 class NodeVarchar: public Node {
     public:
     NodeVarchar(Position position);
+
+    void accept(Visitor& visitor) override;
+};
+
+class NodeJoin: public Node {
+    public:
+    NodeJoin(Position position);
+
+    void accept(Visitor& visitor) override;
+};
+
+class NodeOn: public Node {
+    public:
+    NodeOn(Position position);
+
+    void accept(Visitor& visitor) override;
+};
+
+class NodeAlter: public Node {
+    public:
+    NodeAlter(Position position);
+
+    void accept(Visitor& visitor) override;
+};
+
+class NodeLeft: public Node {
+    public:
+    NodeLeft(Position position);
+
+    void accept(Visitor& visitor) override;
+};
+
+class NodeRight: public Node {
+    public:
+    NodeRight(Position position);
+
+    void accept(Visitor& visitor) override;
+};
+
+class NodeInner: public Node {
+    public:
+    NodeInner(Position position);
+
+    void accept(Visitor& visitor) override;
+};
+
+class NodeFull: public Node {
+    public:
+    NodeFull(Position position);
 
     void accept(Visitor& visitor) override;
 };
