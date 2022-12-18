@@ -37,6 +37,7 @@ class Visitor {
         virtual void visit(const NodeValueList& node) = 0;
         virtual void visit(const NodeColumnList& node) = 0;
         virtual void visit(const NodeAssignmentList& node) = 0;
+        virtual void visit(const NodeAssignmentListItem& node) = 0;
         virtual void visit(const NodeColumnDef& node) = 0;
         virtual void visit(const NodeSelect& node) = 0;
         virtual void visit(const NodeFrom& node) = 0;

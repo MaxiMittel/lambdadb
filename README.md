@@ -53,6 +53,7 @@ order_by_list = order_by_item {"," order_by_item};
 order_by_item = expr ["ASC" | "DESC"];
 limit_clause = "LIMIT" expr;
 
+# TODO: Extract AND and OR to a new rule
 expr = expr ("=" | "<>" | "<" | "<=" | ">" | ">=" | "AND" | "OR" | "LIKE") expr
 unary_expr = ("+" | "-" | "NOT") primary_expr;
 primary_expr = literal_value | ident | ident "." ident | "(" expr ")";

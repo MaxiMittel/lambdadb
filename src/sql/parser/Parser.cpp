@@ -596,43 +596,41 @@ std::shared_ptr<Node> Parser::parse_column_list() {
 }
 
 std::shared_ptr<Node> Parser::parse_assignment_list() {
-    auto token = lexer.next();
+    auto token = lexer.peek_next();
     std::shared_ptr<NodeAssignmentList> assignment_list = std::make_shared<NodeAssignmentList>(token.position);
 
-    assertTokenType(TokenType::BRACE_OPEN, token.type, token.position);
-    assignment_list->_brace_open = std::make_shared<NodeBraceOpen>(token.position);
+    assignment_list->assignment_list.push_back(parse_assignment_list_item());
 
-    token = lexer.next();
+    token = lexer.peek_next();
+    while (token.type == TokenType::COMMA) {
+        token = lexer.next();
+        assignment_list->assignment_list.push_back(std::make_shared<NodeComma>(token.position));
+        assignment_list->assignment_list.push_back(parse_assignment_list_item());
+        token = lexer.peek_next();
+    }
+
+    return assignment_list;
+}
+
+std::shared_ptr<Node> Parser::parse_assignment_list_item() {
+    auto token = lexer.next();
+    std::shared_ptr<NodeAssignmentListItem> assignment_list_item = std::make_shared<NodeAssignmentListItem>(token.position);
+
     assertTokenType(TokenType::IDENTIFIER, token.type, token.position);
-    assignment_list->assignment_list.push_back(std::make_shared<NodeIdentifier>(token.position, token.value));
+    assignment_list_item->identifier = std::make_shared<NodeIdentifier>(token.position, token.value);
 
     token = lexer.next();
     assertTokenType(TokenType::EQUAL, token.type, token.position);
-    assignment_list->assignment_list.push_back(std::make_shared<NodeEqual>(token.position));
+    assignment_list_item->_eq = std::make_shared<NodeEqual>(token.position);
 
     token = lexer.next();
-    assertTokenType(TokenType::IDENTIFIER, token.type, token.position);
-    assignment_list->assignment_list.push_back(std::make_shared<NodeIdentifier>(token.position, token.value));
-
-    token = lexer.next();
-    while (token.type == TokenType::COMMA) {
-        assignment_list->assignment_list.push_back(std::make_shared<NodeComma>(token.position));
-        token = lexer.next();
-        assertTokenType(TokenType::IDENTIFIER, token.type, token.position);
-        assignment_list->assignment_list.push_back(std::make_shared<NodeIdentifier>(token.position, token.value));
-        token = lexer.next();
-        assertTokenType(TokenType::EQUAL, token.type, token.position);
-        assignment_list->assignment_list.push_back(std::make_shared<NodeEqual>(token.position));
-        token = lexer.next();
-        assertTokenType(TokenType::IDENTIFIER, token.type, token.position);
-        assignment_list->assignment_list.push_back(std::make_shared<NodeIdentifier>(token.position, token.value));
-        token = lexer.next();
+    if (token.type == TokenType::LITERAL) {
+        assignment_list_item->expr = std::make_shared<NodeLiteral>(token.position, token.value);
+    } else if (token.type == TokenType::IDENTIFIER) {
+        assignment_list_item->expr = std::make_shared<NodeIdentifier>(token.position, token.value);
     }
 
-    assertTokenType(TokenType::BRACE_CLOSE, token.type, token.position);
-    assignment_list->_brace_close = std::make_shared<NodeBraceClose>(token.position);
-
-    return assignment_list;
+    return assignment_list_item;
 }
 
 std::shared_ptr<Node> Parser::parse_column_def() {

@@ -46,6 +46,7 @@ namespace sql::parser
         virtual void visit(const NodeValueList& node) override;
         virtual void visit(const NodeColumnList& node) override;
         virtual void visit(const NodeAssignmentList& node) override;
+        virtual void visit(const NodeAssignmentListItem& node) override;
         virtual void visit(const NodeColumnDef &node) override;
         virtual void visit(const NodeSelect &node) override;
         virtual void visit(const NodeFrom &node) override;

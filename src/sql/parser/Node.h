@@ -49,6 +49,7 @@ enum NodeType {
     JOIN_CLAUSE,
     VALUE_LIST,
     ASSIGNMENT_LIST,
+    ASSIGNMENT_LIST_ITEM,
 
     // Terminals
     SELECT,
@@ -446,9 +447,17 @@ class NodeColumnList: public Node {
 class NodeAssignmentList: public Node {
     public:
     NodeAssignmentList(Position position);
-    std::shared_ptr<Node> _brace_open = nullptr;
     std::vector<std::shared_ptr<Node>> assignment_list;
-    std::shared_ptr<Node> _brace_close = nullptr;
+
+    void accept(Visitor& visitor) override;
+};
+
+class NodeAssignmentListItem: public Node {
+    public:
+    NodeAssignmentListItem(Position position);
+    std::shared_ptr<Node> identifier = nullptr;
+    std::shared_ptr<Node> _eq = nullptr;
+    std::shared_ptr<Node> expr = nullptr;
 
     void accept(Visitor& visitor) override;
 };

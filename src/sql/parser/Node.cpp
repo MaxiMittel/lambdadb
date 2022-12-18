@@ -185,6 +185,12 @@ void NodeAssignmentList::accept(Visitor& visitor) {
     visitor.visit(*this);
 }
 
+NodeAssignmentListItem::NodeAssignmentListItem(Position position): Node(NodeType::ASSIGNMENT_LIST_ITEM, position) {}
+
+void NodeAssignmentListItem::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
 NodeSelect::NodeSelect(Position position): Node(NodeType::SELECT, position) {}
 
 void NodeSelect::accept(Visitor& visitor) {

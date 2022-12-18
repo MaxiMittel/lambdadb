@@ -683,19 +683,30 @@ void PrintVisitor::visit(const NodeAssignmentList& node) {
     out << "N" << current_node << std::endl;
     out << "N" << current_node << "[label=\"assignment_list\"]" << std::endl;
 
-    if (node._brace_open != nullptr) {
-        out << "N" << current_node << " -> ";
-        node._brace_open->accept(*this);
-    }
-
     for (auto const &assignment_list_item : node.assignment_list) {
         out << "N" << current_node << " -> ";
         assignment_list_item->accept(*this);
     }
+}
 
-    if (node._brace_close != nullptr) {
+void PrintVisitor::visit(const NodeAssignmentListItem& node) {
+    int current_node = node_count++;
+    out << "N" << current_node << std::endl;
+    out << "N" << current_node << "[label=\"assignment_list_item\"]" << std::endl;
+
+    if (node.identifier != nullptr) {
         out << "N" << current_node << " -> ";
-        node._brace_close->accept(*this);
+        node.identifier->accept(*this);
+    }
+
+    if (node._eq != nullptr) {
+        out << "N" << current_node << " -> ";
+        node._eq->accept(*this);
+    }
+
+    if (node.expr != nullptr) {
+        out << "N" << current_node << " -> ";
+        node.expr->accept(*this);
     }
 }
 

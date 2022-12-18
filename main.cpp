@@ -69,7 +69,7 @@ int main()
     {
 
         //Repository repo("SELECT vorname AS name, age FROM user LEFT JOIN posts ON post = user;");
-        Repository repo("INSERT INTO user (id, name, age) VALUES (asd, Maxi, 22);");
+        Repository repo("UPDATE user SET age = 25, name = Maxi WHERE id = 1 AND 5 < 6;");
         sql::lexer::Lexer lexer(repo);
 
         /*while (lexer.has_next_token()) {
