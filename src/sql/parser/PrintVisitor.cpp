@@ -17,6 +17,36 @@ void PrintVisitor::visit(const NodeStmt& node) {
         out << "N" << current_node << " -> ";
         node.select_stmt->accept(*this);
     }
+
+    if (node.insert_stmt != nullptr) {
+        out << "N" << current_node << " -> ";
+        node.insert_stmt->accept(*this);
+    }
+
+    if (node.update_stmt != nullptr) {
+        out << "N" << current_node << " -> ";
+        node.update_stmt->accept(*this);
+    }
+
+    if (node.delete_stmt != nullptr) {
+        out << "N" << current_node << " -> ";
+        node.delete_stmt->accept(*this);
+    }
+
+    if (node.create_stmt != nullptr) {
+        out << "N" << current_node << " -> ";
+        node.create_stmt->accept(*this);
+    }
+
+    if (node.drop_stmt != nullptr) {
+        out << "N" << current_node << " -> ";
+        node.drop_stmt->accept(*this);
+    }
+
+    if (node.alter_stmt != nullptr) {
+        out << "N" << current_node << " -> ";
+        node.alter_stmt->accept(*this);
+    }
 }
 
 void PrintVisitor::visit(const NodeSelectStmt& node) {

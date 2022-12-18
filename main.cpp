@@ -68,7 +68,8 @@ int main()
     Aws::InitAPI(options);
     {
 
-        Repository repo("SELECT vorname AS name, age FROM user LEFT JOIN posts ON post = user;");
+        //Repository repo("SELECT vorname AS name, age FROM user LEFT JOIN posts ON post = user;");
+        Repository repo("INSERT INTO user (id, name, age) VALUES (asd, Maxi, 22);");
         sql::lexer::Lexer lexer(repo);
 
         /*while (lexer.has_next_token()) {

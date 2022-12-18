@@ -36,7 +36,6 @@ void Parser::assertTokenType(TokenType expected, TokenType actual, Position posi
 }
 
 std::shared_ptr<Node> Parser::parse_stmt() {
-    std::cout << "Parsing statement" << std::endl;
     std::shared_ptr<NodeStmt> stmt = std::make_shared<NodeStmt>(Position{0,0});
 
     auto token = lexer.peek_next();
@@ -73,7 +72,6 @@ std::shared_ptr<Node> Parser::parse_stmt() {
 }
 
 std::shared_ptr<Node> Parser::parse_select_stmt() {
-    std::cout << "Parsing select statement" << std::endl;
     auto token = lexer.next();
     std::shared_ptr<NodeSelectStmt> select_stmt = std::make_shared<NodeSelectStmt>(token.position);
 
@@ -113,7 +111,6 @@ std::shared_ptr<Node> Parser::parse_select_stmt() {
 }
 
 std::shared_ptr<Node> Parser::parse_select_list() {
-    std::cout << "Parsing select list" << std::endl;
     auto token = lexer.peek_next();
     std::shared_ptr<NodeSelectList> select_list = std::make_shared<NodeSelectList>(token.position);
 
@@ -136,12 +133,10 @@ std::shared_ptr<Node> Parser::parse_select_list() {
 }
 
 std::shared_ptr<Node> Parser::parse_select_list_item() {
-    std::cout << "Parsing select list item" << std::endl;
     auto token = lexer.next();
     std::shared_ptr<NodeSelectListItem> select_list_item = std::make_shared<NodeSelectListItem>(token.position);
 
     select_list_item->expr = std::make_shared<NodeIdentifier>(token.position, token.value);
-    std::cout << "Select list item: " << token.value << std::endl;
 
     token = lexer.peek_next();
     if (token.type == TokenType::AS) {
@@ -155,7 +150,6 @@ std::shared_ptr<Node> Parser::parse_select_list_item() {
 }
 
 std::shared_ptr<Node> Parser::parse_table_list() {
-    std::cout << "Parsing table list" << std::endl;
     auto token = lexer.peek_next();
     std::shared_ptr<NodeTableList> table_list = std::make_shared<NodeTableList>(token.position);
 
@@ -172,7 +166,6 @@ std::shared_ptr<Node> Parser::parse_table_list() {
 }
 
 std::shared_ptr<Node> Parser::parse_table_list_item() {
-    std::cout << "Parsing table list item" << std::endl;
     auto token = lexer.next();
     std::shared_ptr<NodeTableListItem> table_list_item = std::make_shared<NodeTableListItem>(token.position);
 
@@ -227,7 +220,6 @@ std::shared_ptr<Node> Parser::parse_join_clause() {
 }
 
 std::shared_ptr<Node> Parser::parse_where_clause() {
-    std::cout << "Parsing where clause" << std::endl;
     auto token = lexer.next();
     std::shared_ptr<NodeWhereClause> where_clause = std::make_shared<NodeWhereClause>(token.position);
 
@@ -305,7 +297,6 @@ std::shared_ptr<Node> Parser::parse_limit_clause() {
 }
 
 std::shared_ptr<Node> Parser::parse_expr() {
-    std::cout << "Parsing expr" << std::endl;
     auto token = lexer.peek_next();
     std::shared_ptr<NodeExpression> expr = std::make_shared<NodeExpression>(token.position);
     expr->left = parse_unary_expr();
@@ -329,7 +320,6 @@ std::shared_ptr<Node> Parser::parse_expr() {
             expr->right = parse_expr();
             break;
         case TokenType::EQUAL:
-            std::cout << "Parsing equal" << std::endl;
             expr->_eq = std::make_shared<NodeEqual>(token.position);
             expr->right = parse_expr();
             break;
@@ -346,7 +336,6 @@ std::shared_ptr<Node> Parser::parse_expr() {
             expr->right = parse_expr();
             break;
         default:
-            std::cout << "Returning expr" << std::endl;
             return expr->left;
     }
 
@@ -354,7 +343,6 @@ std::shared_ptr<Node> Parser::parse_expr() {
 }
 
 std::shared_ptr<Node> Parser::parse_unary_expr() {
-    std::cout << "Parsing unary expr" << std::endl;
     auto token = lexer.peek_next();
     std::shared_ptr<NodeUnaryExpression> unary_expr = std::make_shared<NodeUnaryExpression>(token.position);
 
@@ -379,17 +367,14 @@ std::shared_ptr<Node> Parser::parse_unary_expr() {
 }
 
 std::shared_ptr<Node> Parser::parse_primary_expr() {
-    std::cout << "Parsing primary expr" << std::endl;
     auto token = lexer.next();
     std::shared_ptr<NodePrimaryExpression> primary_expr = std::make_shared<NodePrimaryExpression>(token.position);
 
     switch (token.type) {
         case TokenType::LITERAL:
-            std::cout << "Parsing literal" << std::endl;
             primary_expr->literal_value = std::make_shared<NodeLiteral>(token.position, token.value);
             break;
         case TokenType::IDENTIFIER:
-            std::cout << "Parsing identifier" << std::endl;
             primary_expr->ident1 = std::make_shared<NodeIdentifier>(token.position, token.value);
             token = lexer.peek_next();
             if (token.type == TokenType::DOT) {
@@ -401,7 +386,6 @@ std::shared_ptr<Node> Parser::parse_primary_expr() {
             }
             break;
         case TokenType::BRACE_OPEN:
-            std::cout << "Parsing brace open" << std::endl;
             primary_expr->_lparen = std::make_shared<NodeBraceOpen>(token.position);
             primary_expr->expr = parse_expr();
             token = lexer.next();
@@ -576,47 +560,37 @@ std::shared_ptr<Node> Parser::parse_value_list() {
     auto token = lexer.next();
     std::shared_ptr<NodeValueList> value_list = std::make_shared<NodeValueList>(token.position);
 
-    assertTokenType(TokenType::BRACE_OPEN, token.type, token.position);
-    value_list->_brace_open = std::make_shared<NodeBraceOpen>(token.position);
-
     value_list->value_list.emplace_back(std::make_shared<NodeIdentifier>(token.position, token.value));
 
-    token = lexer.next();
+    token = lexer.peek_next();
     while (token.type == TokenType::COMMA) {
+        token = lexer.next();
         value_list->value_list.push_back(std::make_shared<NodeComma>(token.position));
         token = lexer.next();
         value_list->value_list.push_back(std::make_shared<NodeIdentifier>(token.position, token.value));
-        token = lexer.next();
+        token = lexer.peek_next();
     }
-
-    assertTokenType(TokenType::BRACE_CLOSE, token.type, token.position);
-    value_list->_brace_close = std::make_shared<NodeBraceClose>(token.position);
 
     return value_list;
 }
 
 std::shared_ptr<Node> Parser::parse_column_list() {
+    std::cout << "parse_column_list" << std::endl;
     auto token = lexer.next();
     std::shared_ptr<NodeColumnList> column_list = std::make_shared<NodeColumnList>(token.position);
 
-    assertTokenType(TokenType::BRACE_OPEN, token.type, token.position);
-    column_list->_brace_open = std::make_shared<NodeBraceOpen>(token.position);
-
-    token = lexer.next();
     assertTokenType(TokenType::IDENTIFIER, token.type, token.position);
     column_list->column_list.push_back(std::make_shared<NodeIdentifier>(token.position, token.value));
 
-    token = lexer.next();
+    token = lexer.peek_next();
     while (token.type == TokenType::COMMA) {
+        token = lexer.next();
         column_list->column_list.push_back(std::make_shared<NodeComma>(token.position));
         token = lexer.next();
         assertTokenType(TokenType::IDENTIFIER, token.type, token.position);
         column_list->column_list.push_back(std::make_shared<NodeIdentifier>(token.position, token.value));
-        token = lexer.next();
+        token = lexer.peek_next();
     }
-
-    assertTokenType(TokenType::BRACE_CLOSE, token.type, token.position);
-    column_list->_brace_close = std::make_shared<NodeBraceClose>(token.position);
 
     return column_list;
 }
