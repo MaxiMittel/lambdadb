@@ -479,9 +479,21 @@ void NodeFull::accept(Visitor& visitor) {
     visitor.visit(*this);
 }
 
-NodeLiteral::NodeLiteral(Position position, std::string_view value): Node(NodeType::LITERAL, position), value(value) {}
+NodeIntegerLiteral::NodeIntegerLiteral(Position position, std::string_view value): Node(NodeType::INTEGER_LITERAL, position), value(value) {}
 
-void NodeLiteral::accept(Visitor& visitor) {
+void NodeIntegerLiteral::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
+NodeFloatLiteral::NodeFloatLiteral(Position position, std::string_view value): Node(NodeType::FLOAT_LITERAL, position), value(value) {}
+
+void NodeFloatLiteral::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
+NodeStringLiteral::NodeStringLiteral(Position position, std::string_view value): Node(NodeType::STRING_LITERAL, position), value(value) {}
+
+void NodeStringLiteral::accept(Visitor& visitor) {
     visitor.visit(*this);
 }
 

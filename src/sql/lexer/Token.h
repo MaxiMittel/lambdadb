@@ -21,7 +21,9 @@ enum TokenType {
     IDENTIFIER,
 
     // Literals
-    LITERAL,
+    INTEGER_LITERAL,
+    FLOAT_LITERAL,
+    STRING_LITERAL,
 
     // Keywords
     SELECT,

@@ -51,6 +51,7 @@ private:
     std::shared_ptr<Node> parse_assignment_list_item();
     std::shared_ptr<Node> parse_column_def();
     std::shared_ptr<Node> parse_column_def_list();
+    std::shared_ptr<Node> parse_literal();
 
     void assertTokenType(sql::lexer::TokenType expected, sql::lexer::TokenType actual, Position position);
 

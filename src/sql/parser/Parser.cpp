@@ -367,14 +367,17 @@ std::shared_ptr<Node> Parser::parse_unary_expr() {
 }
 
 std::shared_ptr<Node> Parser::parse_primary_expr() {
-    auto token = lexer.next();
+    auto token = lexer.peek_next();
     std::shared_ptr<NodePrimaryExpression> primary_expr = std::make_shared<NodePrimaryExpression>(token.position);
 
     switch (token.type) {
-        case TokenType::LITERAL:
-            primary_expr->literal_value = std::make_shared<NodeLiteral>(token.position, token.value);
+        case TokenType::INTEGER_LITERAL:
+        case TokenType::FLOAT_LITERAL:
+        case TokenType::STRING_LITERAL:
+            primary_expr->literal_value = parse_literal();
             break;
         case TokenType::IDENTIFIER:
+            lexer.next();
             primary_expr->ident1 = std::make_shared<NodeIdentifier>(token.position, token.value);
             token = lexer.peek_next();
             if (token.type == TokenType::DOT) {
@@ -386,6 +389,7 @@ std::shared_ptr<Node> Parser::parse_primary_expr() {
             }
             break;
         case TokenType::BRACE_OPEN:
+            lexer.next();
             primary_expr->_lparen = std::make_shared<NodeBraceOpen>(token.position);
             primary_expr->expr = parse_expr();
             token = lexer.next();
@@ -623,12 +627,7 @@ std::shared_ptr<Node> Parser::parse_assignment_list_item() {
     assertTokenType(TokenType::EQUAL, token.type, token.position);
     assignment_list_item->_eq = std::make_shared<NodeEqual>(token.position);
 
-    token = lexer.next();
-    if (token.type == TokenType::LITERAL) {
-        assignment_list_item->expr = std::make_shared<NodeLiteral>(token.position, token.value);
-    } else if (token.type == TokenType::IDENTIFIER) {
-        assignment_list_item->expr = std::make_shared<NodeIdentifier>(token.position, token.value);
-    }
+    assignment_list_item->expr = parse_literal();
 
     return assignment_list_item;
 }
@@ -668,4 +667,24 @@ std::shared_ptr<Node> Parser::parse_column_def_list() {
     }*/
 
     return column_def_list;
+}
+
+std::shared_ptr<Node> Parser::parse_literal() {
+    auto token = lexer.next();
+    
+    switch (token.type)
+    {
+    case TokenType::INTEGER_LITERAL:
+        return std::make_shared<NodeIntegerLiteral>(token.position, token.value);
+        break;
+    case TokenType::STRING_LITERAL:
+        return std::make_shared<NodeStringLiteral>(token.position, token.value);
+        break;
+    case TokenType::FLOAT_LITERAL:
+        return std::make_shared<NodeFloatLiteral>(token.position, token.value);
+        break;
+    default:
+        throw std::runtime_error("Invalid literal");
+        break;
+    }
 }

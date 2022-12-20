@@ -1079,10 +1079,30 @@ void PrintVisitor::visit(const NodeOn& node) {
     out << "N" << current_node << "[label=\"ON\"]" << std::endl;
 }
 
-void PrintVisitor::visit(const NodeLiteral& node) {
+void PrintVisitor::visit(const NodeIntegerLiteral& node) {
     int current_node = node_count++;
     out << "N" << current_node << std::endl;
-    out << "N" << current_node << "[label=\"literal\"]" << std::endl;
+    out << "N" << current_node << "[label=\"integer_literal\"]" << std::endl;
+    out << "NI" << (current_node + 1) << "[label=\"" << node.value << "\"]" << std::endl;
+    out << "N" << current_node << " -> "
+           << "NI" << (current_node + 1) << std::endl;
+    current_node++;
+}
+
+void PrintVisitor::visit(const NodeFloatLiteral& node) {
+    int current_node = node_count++;
+    out << "N" << current_node << std::endl;
+    out << "N" << current_node << "[label=\"float_literal\"]" << std::endl;
+    out << "NI" << (current_node + 1) << "[label=\"" << node.value << "\"]" << std::endl;
+    out << "N" << current_node << " -> "
+           << "NI" << (current_node + 1) << std::endl;
+    current_node++;
+}
+
+void PrintVisitor::visit(const NodeStringLiteral& node) {
+    int current_node = node_count++;
+    out << "N" << current_node << std::endl;
+    out << "N" << current_node << "[label=\"string_literal\"]" << std::endl;
     out << "NI" << (current_node + 1) << "[label=\"" << node.value << "\"]" << std::endl;
     out << "N" << current_node << " -> "
            << "NI" << (current_node + 1) << std::endl;

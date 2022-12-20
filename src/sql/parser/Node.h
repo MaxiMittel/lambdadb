@@ -99,7 +99,9 @@ enum NodeType {
     JOIN,
     ON,
     DOT,
-    LITERAL,
+    INTEGER_LITERAL,
+    FLOAT_LITERAL,
+    STRING_LITERAL,
     IDENTIFIER,
 
     // Datatypes
@@ -806,9 +808,25 @@ class NodeFull: public Node {
     void accept(Visitor& visitor) override;
 };
 
-class NodeLiteral: public Node {
+class NodeIntegerLiteral: public Node {
     public:
-    NodeLiteral(Position position, std::string_view value);
+    NodeIntegerLiteral(Position position, std::string_view value);
+    std::string_view value;
+
+    void accept(Visitor& visitor) override;
+};
+
+class NodeFloatLiteral: public Node {
+    public:
+    NodeFloatLiteral(Position position, std::string_view value);
+    std::string_view value;
+
+    void accept(Visitor& visitor) override;
+};
+
+class NodeStringLiteral: public Node {
+    public:
+    NodeStringLiteral(Position position, std::string_view value);
     std::string_view value;
 
     void accept(Visitor& visitor) override;

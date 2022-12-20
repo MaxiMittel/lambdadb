@@ -97,7 +97,9 @@ namespace sql::parser
         virtual void visit(const NodeInner &node) override;
         virtual void visit(const NodeFull &node) override;
         virtual void visit(const NodeOn& node) override;
-        virtual void visit(const NodeLiteral &node) override;
+        virtual void visit(const NodeIntegerLiteral& node) override;
+        virtual void visit(const NodeFloatLiteral& node) override;
+        virtual void visit(const NodeStringLiteral& node) override;
         virtual void visit(const NodeIdentifier &node) override;
     };
 

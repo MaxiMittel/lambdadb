@@ -88,7 +88,9 @@ class Visitor {
         virtual void visit(const NodeInner& node) = 0;
         virtual void visit(const NodeFull& node) = 0;
         virtual void visit(const NodeOn& node) = 0;
-        virtual void visit(const NodeLiteral& node) = 0;
+        virtual void visit(const NodeIntegerLiteral& node) = 0;
+        virtual void visit(const NodeFloatLiteral& node) = 0;
+        virtual void visit(const NodeStringLiteral& node) = 0;
         virtual void visit(const NodeIdentifier& node) = 0;
 };
 
