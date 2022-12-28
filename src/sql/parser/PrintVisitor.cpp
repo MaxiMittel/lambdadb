@@ -385,9 +385,19 @@ void PrintVisitor::visit(const NodeJoinClause& node) {
         node._on->accept(*this);
     }
 
-    if (node.expr != nullptr) {
+    if (node.left != nullptr) {
         out << "N" << current_node << " -> ";
-        node.expr->accept(*this);
+        node.left->accept(*this);
+    }
+
+    if (node._equal != nullptr) {
+        out << "N" << current_node << " -> ";
+        node._equal->accept(*this);
+    }
+
+    if (node.right != nullptr) {
+        out << "N" << current_node << " -> ";
+        node.right->accept(*this);
     }
 }
 

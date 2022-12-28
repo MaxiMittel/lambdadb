@@ -47,12 +47,28 @@ void SelectStatment::setTables(std::vector<TableRef> tables) {
     this->tables = tables;
 }
 
+void SelectStatment::setWhere(std::shared_ptr<Node> where) {
+    this->where = where;
+}
+
+void SelectStatment::setJoin(std::shared_ptr<Node> join) {
+    this->join = join;
+}
+
 std::vector<ColumnRef> SelectStatment::getColumns() const {
     return columns;
 }
 
 std::vector<TableRef> SelectStatment::getTables() const {
     return tables;
+}
+
+std::shared_ptr<Node> SelectStatment::getWhere() const {
+    return where;
+}
+
+std::shared_ptr<Node> SelectStatment::getJoin() const {
+    return join;
 }
 
 void SelectStatment::accept(Visitor &visitor) {
@@ -91,3 +107,46 @@ void SelectStatment::evaluate(Evaluator &evaluator) {
 
     // TODO: Project columns, maybe in the JSON output
 }
+
+JoinStatement::JoinStatement(Position position, Repository &repository) : Node(ASTNodeType::JOIN_CLAUSE, position, repository) {}
+
+void JoinStatement::setType(sql::ast::JoinType type) {
+    this->type = type;
+}
+
+sql::ast::JoinType JoinStatement::getType() const {
+    return type;
+}
+
+void JoinStatement::setTable(TableRef table) {
+    this->table = table;
+}
+
+TableRef JoinStatement::getTable() const {
+    return table;
+}
+
+void JoinStatement::setLeft(ColumnRef column) {
+    this->left = column;
+}
+
+ColumnRef JoinStatement::getLeft() const {
+    return left;
+}
+
+void JoinStatement::setRight(ColumnRef column) {
+    this->right = column;
+}
+
+ColumnRef JoinStatement::getRight() const {
+    return right;
+}
+
+void JoinStatement::accept(Visitor &visitor) {
+    visitor.visit(*this);
+}
+
+void JoinStatement::evaluate(Evaluator &evaluator) {
+    std::ignore = evaluator;
+}
+

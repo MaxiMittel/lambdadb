@@ -74,9 +74,9 @@ std::shared_ptr<Node> AST::analyzeStatement(parser::NodeSelectStmt* node) {
         parser::NodeIdentifier* alias = static_cast<parser::NodeIdentifier*>(tableListItem->as.get());
 
         if (alias != nullptr) {
-            tables.emplace_back(TableRef{std::string(tableName->value), std::string(alias->value)});
+            tables.emplace_back(TableRef{tableName->value, alias->value});
         } else {
-            tables.emplace_back(TableRef{std::string(tableName->value), ""});
+            tables.emplace_back(TableRef{tableName->value, ""});
         }
     }
 
@@ -84,8 +84,8 @@ std::shared_ptr<Node> AST::analyzeStatement(parser::NodeSelectStmt* node) {
 
     // Analyze join conditions
     if (node->join_clause != nullptr) {
-        std::shared_ptr<JoinStatement> joinStatement = std::make_shared<JoinStatement>();
         parser::NodeJoinClause* joinClause = static_cast<parser::NodeJoinClause*>(node->join_clause.get());
+        std::shared_ptr<JoinStatement> joinStatement = std::make_shared<JoinStatement>(joinClause->getPosition(), repository);
         
         switch (joinClause->join_type.get()->getType()) {
             case parser::NodeType::LEFT:
@@ -109,39 +109,36 @@ std::shared_ptr<Node> AST::analyzeStatement(parser::NodeSelectStmt* node) {
         parser::NodeIdentifier* alias = static_cast<parser::NodeIdentifier*>(tableListItem->as.get());
 
         if (alias != nullptr) {
-            joinStatement->setTable(TableRef{std::string(tableName->value), std::string(alias->value)});
+            joinStatement->setTable(TableRef{tableName->value, alias->value});
         } else {
-            joinStatement->setTable(TableRef{std::string(tableName->value), ""});
+            joinStatement->setTable(TableRef{tableName->value, ""});
         }
         
-        parser::NodeExpression* expr = static_cast<parser::NodeExpression*>(joinClause->expr.get());
-        parser::NodeUnaryExpression* left = static_cast<parser::NodeUnaryExpression*>(expr->left.get());
-        parser::NodeUnaryExpression* right = static_cast<parser::NodeUnaryExpression*>(expr->right.get());
-        parser::NodePrimaryExpression* leftPrimary = static_cast<parser::NodePrimaryExpression*>(left->primary_expr.get());
-        parser::NodePrimaryExpression* rightPrimary = static_cast<parser::NodePrimaryExpression*>(right->primary_expr.get());
+        parser::NodePrimaryExpression* left = static_cast<parser::NodePrimaryExpression*>(joinClause->left.get());
+        parser::NodePrimaryExpression* right = static_cast<parser::NodePrimaryExpression*>(joinClause->right.get());
 
-        if (leftPrimary->ident1 != nullptr && leftPrimary->ident2 != nullptr) {
-            parser::NodeIdentifier* ident1 = static_cast<parser::NodeIdentifier*>(leftPrimary->ident1.get());
-            parser::NodeIdentifier* ident2 = static_cast<parser::NodeIdentifier*>(leftPrimary->ident2.get());
+        if (left->ident1 != nullptr && left->ident2 != nullptr) {
+            parser::NodeIdentifier* ident1 = static_cast<parser::NodeIdentifier*>(left->ident1.get());
+            parser::NodeIdentifier* ident2 = static_cast<parser::NodeIdentifier*>(left->ident2.get());
             joinStatement->setLeft(ColumnRef{false, std::string(ident1->value), std::string(ident2->value), ""});
-        } else if (leftPrimary->identifier != nullptr) {
-            parser::NodeIdentifier* ident = static_cast<parser::NodeIdentifier*>(leftPrimary->identifier.get());
+        } else if (left->ident1 != nullptr) {
+            parser::NodeIdentifier* ident = static_cast<parser::NodeIdentifier*>(left->ident1.get());
             joinStatement->setLeft(ColumnRef{false, "", std::string(ident->value), ""});
-        } else if (leftPrimary->literal_value != nullptr) {
+        } else if (left->literal_value != nullptr) {
             // TODO: Support literal values
-            //joinStatement->setLeftColumn(ColumnRef{false, "", std::string(leftPrimary->literal_value->value), ""});
+            //joinStatement->setLeftColumn(ColumnRef{false, "", std::string(left->literal_value->value), ""});
         }
 
-        if (rightPrimary->ident1 != nullptr && rightPrimary->ident2 != nullptr) {
-            parser::NodeIdentifier* ident1 = static_cast<parser::NodeIdentifier*>(rightPrimary->ident1.get());
-            parser::NodeIdentifier* ident2 = static_cast<parser::NodeIdentifier*>(rightPrimary->ident2.get());
+        if (right->ident1 != nullptr && right->ident2 != nullptr) {
+            parser::NodeIdentifier* ident1 = static_cast<parser::NodeIdentifier*>(right->ident1.get());
+            parser::NodeIdentifier* ident2 = static_cast<parser::NodeIdentifier*>(right->ident2.get());
             joinStatement->setRight(ColumnRef{false, std::string(ident1->value), std::string(ident2->value), ""});
-        } else if (rightPrimary->identifier != nullptr) {
-            parser::NodeIdentifier* ident = static_cast<parser::NodeIdentifier*>(rightPrimary->identifier.get());
+        } else if (right->ident1 != nullptr) {
+            parser::NodeIdentifier* ident = static_cast<parser::NodeIdentifier*>(right->ident1.get());
             joinStatement->setRight(ColumnRef{false, "", std::string(ident->value), ""});
-        } else if (rightPrimary->literal_value != nullptr) {
+        } else if (right->literal_value != nullptr) {
             // TODO: Support literal values
-            //joinStatement->setRightColumn(ColumnRef{false, "", std::string(rightPrimary->literal_value->value), ""});
+            //joinStatement->setRightColumn(ColumnRef{false, "", std::string(right->literal_value->value), ""});
         }
 
         selectStatement->setJoin(joinStatement);
@@ -153,4 +150,9 @@ std::shared_ptr<Node> AST::analyzeStatement(parser::NodeSelectStmt* node) {
     }
 
     return selectStatement;
+}
+
+std::shared_ptr<Node> AST::analyzeStatement(parser::NodeWhereClause* node) {
+    std::ignore = node;
+    return nullptr;
 }

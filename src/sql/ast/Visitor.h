@@ -13,6 +13,7 @@ class Visitor {
     public:
         virtual void visit(const Statement& node) = 0;
         virtual void visit(const SelectStatment& node) = 0;
+        virtual void visit(const JoinStatement& node) = 0;
 };
 
 } // namespace sql::ast

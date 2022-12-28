@@ -37,6 +37,9 @@ enum ASTNodeType {
     UPDATE_STATEMENT,
     DELETE_STATEMENT,
 
+    JOIN_CLAUSE,
+    WHERE_CLAUSE,
+
     // Data Definition Statements
     CREATE_TABLE_STATEMENT,
     DROP_TABLE_STATEMENT,

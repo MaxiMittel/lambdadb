@@ -214,7 +214,12 @@ std::shared_ptr<Node> Parser::parse_join_clause() {
     assertTokenType(TokenType::ON, token.type, token.position);
     join_clause->_on = std::make_shared<NodeOn>(token.position);
 
-    join_clause->expr = parse_expr();
+    join_clause->left = parse_primary_expr();
+
+    token = lexer.next();
+    join_clause->_equal = std::make_shared<NodeEqual>(token.position);
+
+    join_clause->right = parse_primary_expr();
 
     return join_clause;
 }

@@ -298,7 +298,9 @@ class NodeJoinClause: public Node {
     std::shared_ptr<Node> _join = nullptr;
     std::shared_ptr<Node> table_list_item = nullptr;
     std::shared_ptr<Node> _on = nullptr;
-    std::shared_ptr<Node> expr = nullptr;
+    std::shared_ptr<Node> left = nullptr;
+    std::shared_ptr<Node> _equal = nullptr;
+    std::shared_ptr<Node> right = nullptr;
 
     void accept(Visitor& visitor) override;
 };
