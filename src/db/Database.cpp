@@ -68,7 +68,7 @@ std::vector<std::shared_ptr<Table>> Database::getTables() const {
     std::vector<std::shared_ptr<Table>> tables;
     
     for (auto& table : this->tables) {
-        tables.push_back(table.second);
+        tables.emplace_back(table.second);
     }
 
     return tables;

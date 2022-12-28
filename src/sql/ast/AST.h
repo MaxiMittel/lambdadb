@@ -8,7 +8,6 @@
 #include <vector>
 #include "../code/Repository.h"
 #include "../parser/Parser.h"
-#include "../code/Repository.h"
 #include "Node.h"
 
 namespace sql::ast {
@@ -22,6 +21,7 @@ class AST {
 
     std::shared_ptr<Node> analyzeStatement(parser::NodeStmt* node);
     std::shared_ptr<Node> analyzeStatement(parser::NodeSelectStmt* node);
+    std::shared_ptr<Node> analyzeStatement(parser::NodeWhereClause* node);
 
     public:
     AST(sql::parser::Parser& parser, Repository& repository);

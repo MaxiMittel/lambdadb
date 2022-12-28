@@ -24,8 +24,8 @@ struct ColumnRef {
 };
 
 struct TableRef {
-    std::string name;
-    std::string alias;
+    std::string_view name;
+    std::string_view alias;
 };
 
 enum ASTNodeType {
@@ -45,6 +45,13 @@ enum ASTNodeType {
 
     LITERAL,
     IDENTIFIER
+};
+
+enum JoinType {
+    INNER,
+    LEFT,
+    RIGHT,
+    FULL
 };
 
 class Node {
@@ -104,6 +111,8 @@ class SelectStatment : public Node {
 private:
     std::vector<ColumnRef> columns;
     std::vector<TableRef> tables;
+    std::shared_ptr<Node> where;
+    std::shared_ptr<Node> join;
 
 public:
     SelectStatment(Position position, Repository &repository);
@@ -112,9 +121,48 @@ public:
 
     void setTables(std::vector<TableRef> tables);
 
+    void setWhere(std::shared_ptr<Node> where);
+
+    void setJoin(std::shared_ptr<Node> join);
+
     std::vector<ColumnRef> getColumns() const;
 
     std::vector<TableRef> getTables() const;
+
+    std::shared_ptr<Node> getWhere() const;
+
+    std::shared_ptr<Node> getJoin() const;
+
+    void accept(Visitor &visitor) override;
+
+    void evaluate(Evaluator& context) override;
+};
+
+class JoinStatement : public Node {
+private:
+    JoinType type;
+    TableRef table;
+    ColumnRef left;
+    ColumnRef right;
+
+public:
+    JoinStatement(Position position, Repository &repository);
+
+    void setType(JoinType type);
+
+    JoinType getType() const;
+
+    void setTable(TableRef table);
+
+    TableRef getTable() const;
+
+    void setLeft(ColumnRef left);
+
+    ColumnRef getLeft() const;
+
+    void setRight(ColumnRef right);
+
+    ColumnRef getRight() const;
 
     void accept(Visitor &visitor) override;
 

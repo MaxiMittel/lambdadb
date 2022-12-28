@@ -120,12 +120,12 @@ std::shared_ptr<Node> Parser::parse_select_list() {
         return select_list;
     }
 
-    select_list->select_list_items.push_back(parse_select_list_item());
+    select_list->select_list_items.emplace_back(parse_select_list_item());
 
     token = lexer.peek_next();
     while (token.type == TokenType::COMMA) {
         lexer.next();
-        select_list->select_list_items.push_back(parse_select_list_item());
+        select_list->select_list_items.emplace_back(parse_select_list_item());
         token = lexer.peek_next();
     }
 
@@ -153,12 +153,12 @@ std::shared_ptr<Node> Parser::parse_table_list() {
     auto token = lexer.peek_next();
     std::shared_ptr<NodeTableList> table_list = std::make_shared<NodeTableList>(token.position);
 
-    table_list->table_list_items.push_back(parse_table_list_item());
+    table_list->table_list_items.emplace_back(parse_table_list_item());
 
     token = lexer.peek_next();
     while (token.type == TokenType::COMMA) {
         lexer.next();
-        table_list->table_list_items.push_back(parse_table_list_item());
+        table_list->table_list_items.emplace_back(parse_table_list_item());
         token = lexer.peek_next();
     }
 
@@ -251,12 +251,12 @@ std::shared_ptr<Node> Parser::parse_order_list() {
     auto token = lexer.next();
     std::shared_ptr<NodeOrderList> order_list = std::make_shared<NodeOrderList>(token.position);
 
-    order_list->order_list_items.push_back(parse_order_list_item());
+    order_list->order_list_items.emplace_back(parse_order_list_item());
 
     token = lexer.peek_next();
     while (token.type == TokenType::COMMA) {
         lexer.next();
-        order_list->order_list_items.push_back(parse_order_list_item());
+        order_list->order_list_items.emplace_back(parse_order_list_item());
         token = lexer.peek_next();
     }
 
@@ -569,9 +569,9 @@ std::shared_ptr<Node> Parser::parse_value_list() {
     token = lexer.peek_next();
     while (token.type == TokenType::COMMA) {
         token = lexer.next();
-        value_list->value_list.push_back(std::make_shared<NodeComma>(token.position));
+        value_list->value_list.emplace_back(std::make_shared<NodeComma>(token.position));
         token = lexer.next();
-        value_list->value_list.push_back(std::make_shared<NodeIdentifier>(token.position, token.value));
+        value_list->value_list.emplace_back(std::make_shared<NodeIdentifier>(token.position, token.value));
         token = lexer.peek_next();
     }
 
@@ -584,15 +584,15 @@ std::shared_ptr<Node> Parser::parse_column_list() {
     std::shared_ptr<NodeColumnList> column_list = std::make_shared<NodeColumnList>(token.position);
 
     assertTokenType(TokenType::IDENTIFIER, token.type, token.position);
-    column_list->column_list.push_back(std::make_shared<NodeIdentifier>(token.position, token.value));
+    column_list->column_list.emplace_back(std::make_shared<NodeIdentifier>(token.position, token.value));
 
     token = lexer.peek_next();
     while (token.type == TokenType::COMMA) {
         token = lexer.next();
-        column_list->column_list.push_back(std::make_shared<NodeComma>(token.position));
+        column_list->column_list.emplace_back(std::make_shared<NodeComma>(token.position));
         token = lexer.next();
         assertTokenType(TokenType::IDENTIFIER, token.type, token.position);
-        column_list->column_list.push_back(std::make_shared<NodeIdentifier>(token.position, token.value));
+        column_list->column_list.emplace_back(std::make_shared<NodeIdentifier>(token.position, token.value));
         token = lexer.peek_next();
     }
 
@@ -603,13 +603,13 @@ std::shared_ptr<Node> Parser::parse_assignment_list() {
     auto token = lexer.peek_next();
     std::shared_ptr<NodeAssignmentList> assignment_list = std::make_shared<NodeAssignmentList>(token.position);
 
-    assignment_list->assignment_list.push_back(parse_assignment_list_item());
+    assignment_list->assignment_list.emplace_back(parse_assignment_list_item());
 
     token = lexer.peek_next();
     while (token.type == TokenType::COMMA) {
         token = lexer.next();
-        assignment_list->assignment_list.push_back(std::make_shared<NodeComma>(token.position));
-        assignment_list->assignment_list.push_back(parse_assignment_list_item());
+        assignment_list->assignment_list.emplace_back(std::make_shared<NodeComma>(token.position));
+        assignment_list->assignment_list.emplace_back(parse_assignment_list_item());
         token = lexer.peek_next();
     }
 

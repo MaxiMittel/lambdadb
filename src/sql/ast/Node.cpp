@@ -61,7 +61,7 @@ void SelectStatment::accept(Visitor &visitor) {
 
 void SelectStatment::evaluate(Evaluator &evaluator) {
     for (auto &table : tables) {
-        std::shared_ptr<Table> tableRef = evaluator.getDatabase().getTable(table.name);
+        std::shared_ptr<Table> tableRef = evaluator.getDatabase().getTable(std::string(table.name));
         
         if (evaluator.getEvaluationTable().get()->getRowCount() == 0) {
             evaluator.getEvaluationTable().get()->setColumns(tableRef->getColumns());
@@ -79,7 +79,7 @@ void SelectStatment::evaluate(Evaluator &evaluator) {
                     std::vector<std::shared_ptr<DataEntryBase>> newItem;
                     newItem.insert(newItem.end(), item1.begin(), item1.end());
                     newItem.insert(newItem.end(), item2.begin(), item2.end());
-                    newItems.push_back(newItem);
+                    newItems.emplace_back(newItem);
                 }
             }
 
