@@ -491,9 +491,20 @@ void PrintVisitor::visit(const NodeExpression& node) {
     out << "N" << current_node << std::endl;
     out << "N" << current_node << "[label=\"expression\"]" << std::endl;
 
-    if (node.left != nullptr) {
+    if (node.and_expr != nullptr) {
         out << "N" << current_node << " -> ";
-        node.left->accept(*this);
+        node.and_expr->accept(*this);
+    }
+}
+
+void PrintVisitor::visit(const NodeAndExpression& node) {
+    int current_node = node_count++;
+    out << "N" << current_node << std::endl;
+    out << "N" << current_node << "[label=\"and_expression\"]" << std::endl;
+
+    if (node.or_expr != nullptr) {
+        out << "N" << current_node << " -> ";
+        node.or_expr->accept(*this);
     }
 
     if (node._and != nullptr) {
@@ -501,39 +512,71 @@ void PrintVisitor::visit(const NodeExpression& node) {
         node._and->accept(*this);
     }
 
+    if (node.and_expr != nullptr) {
+        out << "N" << current_node << " -> ";
+        node.and_expr->accept(*this);
+    }
+}
+
+void PrintVisitor::visit(const NodeOrExpression& node) {
+    int current_node = node_count++;
+    out << "N" << current_node << std::endl;
+    out << "N" << current_node << "[label=\"or_expression\"]" << std::endl;
+
+    if (node.bool_expr != nullptr) {
+        out << "N" << current_node << " -> ";
+        node.bool_expr->accept(*this);
+    }
+
     if (node._or != nullptr) {
         out << "N" << current_node << " -> ";
         node._or->accept(*this);
     }
 
-    if (node._eq != nullptr) {
+    if (node.or_expr != nullptr) {
         out << "N" << current_node << " -> ";
-        node._eq->accept(*this);
+        node.or_expr->accept(*this);
+    }
+}
+
+void PrintVisitor::visit(const NodeBoolExpression& node) {
+    int current_node = node_count++;
+    out << "N" << current_node << std::endl;
+    out << "N" << current_node << "[label=\"bool_expression\"]" << std::endl;
+
+    if (node.left != nullptr) {
+        out << "N" << current_node << " -> ";
+        node.left->accept(*this);
     }
 
-    if (node._neq != nullptr) {
+    if (node._equal != nullptr) {
         out << "N" << current_node << " -> ";
-        node._neq->accept(*this);
+        node._equal->accept(*this);
     }
 
-    if (node._lt != nullptr) {
+    if (node._not_equal != nullptr) {
         out << "N" << current_node << " -> ";
-        node._lt->accept(*this);
+        node._not_equal->accept(*this);
     }
 
-    if (node._gt != nullptr) {
+    if (node._less != nullptr) {
         out << "N" << current_node << " -> ";
-        node._gt->accept(*this);
+        node._less->accept(*this);
     }
 
-    if (node._lte != nullptr) {
+    if (node._greater != nullptr) {
         out << "N" << current_node << " -> ";
-        node._lte->accept(*this);
+        node._greater->accept(*this);
     }
 
-    if (node._gte != nullptr) {
+    if (node._less_equal != nullptr) {
         out << "N" << current_node << " -> ";
-        node._gte->accept(*this);
+        node._less_equal->accept(*this);
+    }
+
+    if (node._greater_equal != nullptr) {
+        out << "N" << current_node << " -> ";
+        node._greater_equal->accept(*this);
     }
 
     if (node.right != nullptr) {

@@ -68,7 +68,7 @@ int main()
     Aws::InitAPI(options);
     {
 
-        Repository repo("SELECT vorname AS name, age FROM user LEFT JOIN posts ON post = user;");
+        Repository repo("SELECT vorname AS name, age FROM user WHERE a = 5 AND b < c OR leon = 'dumm';");
         //Repository repo("UPDATE user SET age = 25, name = 'Maxi' WHERE id = '1' AND 5 < 6;");
         sql::lexer::Lexer lexer(repo);
 
@@ -82,12 +82,12 @@ int main()
 
         parser.print(std::cout);
 
-        sql::ast::AST ast(parser, repo);
+        /*sql::ast::AST ast(parser, repo);
         ast.analyze();
 
         ast.print(std::cout);
 
-        /*std::string database = "cpp_test";
+        std::string database = "cpp_test";
         StorageService storageService("serverless-db-9umfiaj");
         Database db(database, storageService);
 

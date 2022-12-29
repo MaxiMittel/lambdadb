@@ -38,7 +38,10 @@ namespace sql::parser
         virtual void visit(const NodeOrderList &node) override;
         virtual void visit(const NodeOrderListItem &node) override;
         virtual void visit(const NodeLimitClause &node) override;
-        virtual void visit(const NodeExpression &node) override;
+        virtual void visit(const NodeExpression& node) override;
+        virtual void visit(const NodeAndExpression& node) override;
+        virtual void visit(const NodeOrExpression& node) override;
+        virtual void visit(const NodeBoolExpression& node) override;
         virtual void visit(const NodeUnaryExpression &node) override;
         virtual void visit(const NodePrimaryExpression &node) override;
         virtual void visit(const NodeUpdateList &node) override;

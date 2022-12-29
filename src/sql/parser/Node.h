@@ -42,6 +42,9 @@ enum NodeType {
     ORDER_BY_LIST,
     ORDER_LIST_ITEM,
     EXPRESSION,
+    AND_EXPRESSION,
+    OR_EXPRESSION,
+    BOOL_EXPRESSION,
     UNARY_EXPRESSION,
     PRIMARY_EXPRESSION,
     TABLE_LIST,
@@ -354,15 +357,46 @@ class NodeLimitClause: public Node {
 class NodeExpression: public Node {
     public:
     NodeExpression(Position position);
+    std::shared_ptr<Node> and_expr;
+
+    void accept(Visitor& visitor) override;
+};
+
+class NodeAndExpression: public Node {
+    public:
+    NodeAndExpression(Position position);
+    std::shared_ptr<Node> or_expr;
+
+    // Optional
+    std::shared_ptr<Node> _and;
+    std::shared_ptr<Node> and_expr;
+
+    void accept(Visitor& visitor) override;
+};
+
+class NodeOrExpression: public Node {
+    public:
+    NodeOrExpression(Position position);
+    std::shared_ptr<Node> bool_expr;
+
+    // Optional
+    std::shared_ptr<Node> _or;
+    std::shared_ptr<Node> or_expr;
+
+    void accept(Visitor& visitor) override;
+};
+
+class NodeBoolExpression: public Node {
+    public:
+    NodeBoolExpression(Position position);
     std::shared_ptr<Node> left = nullptr;
-    std::shared_ptr<Node> _and = nullptr;
-    std::shared_ptr<Node> _or = nullptr;
-    std::shared_ptr<Node> _lt = nullptr;
-    std::shared_ptr<Node> _gt = nullptr;
-    std::shared_ptr<Node> _eq = nullptr;
-    std::shared_ptr<Node> _neq = nullptr;
-    std::shared_ptr<Node> _lte = nullptr;
-    std::shared_ptr<Node> _gte = nullptr;
+    std::shared_ptr<Node> _equal = nullptr;
+    std::shared_ptr<Node> _not_equal = nullptr;
+    std::shared_ptr<Node> _less = nullptr;
+    std::shared_ptr<Node> _less_equal = nullptr;
+    std::shared_ptr<Node> _greater = nullptr;
+    std::shared_ptr<Node> _greater_equal = nullptr;
+    std::shared_ptr<Node> _like = nullptr;
     std::shared_ptr<Node> right = nullptr;
 
     void accept(Visitor& visitor) override;

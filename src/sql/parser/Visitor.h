@@ -30,6 +30,9 @@ class Visitor {
         virtual void visit(const NodeOrderListItem& node) = 0;
         virtual void visit(const NodeLimitClause& node) = 0;
         virtual void visit(const NodeExpression& node) = 0;
+        virtual void visit(const NodeAndExpression& node) = 0;
+        virtual void visit(const NodeOrExpression& node) = 0;
+        virtual void visit(const NodeBoolExpression& node) = 0;
         virtual void visit(const NodeUnaryExpression& node) = 0;
         virtual void visit(const NodePrimaryExpression& node) = 0;
         virtual void visit(const NodeUpdateList& node) = 0;

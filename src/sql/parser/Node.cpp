@@ -137,6 +137,24 @@ void NodeExpression::accept(Visitor& visitor) {
     visitor.visit(*this);
 }
 
+NodeAndExpression::NodeAndExpression(Position position): Node(NodeType::AND_EXPRESSION, position) {}
+
+void NodeAndExpression::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
+NodeOrExpression::NodeOrExpression(Position position): Node(NodeType::OR_EXPRESSION, position) {}
+
+void NodeOrExpression::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
+NodeBoolExpression::NodeBoolExpression(Position position): Node(NodeType::BOOL_EXPRESSION, position) {}
+
+void NodeBoolExpression::accept(Visitor& visitor) {
+    visitor.visit(*this);
+}
+
 NodeUnaryExpression::NodeUnaryExpression(Position position): Node(NodeType::UNARY_EXPRESSION, position) {}
 
 void NodeUnaryExpression::accept(Visitor& visitor) {

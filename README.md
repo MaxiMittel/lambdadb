@@ -51,12 +51,14 @@ where_clause = "WHERE" expr;
 order_by_clause = "ORDER BY" order_by_list;
 order_by_list = order_by_item {"," order_by_item};
 order_by_item = expr ["ASC" | "DESC"];
-limit_clause = "LIMIT" expr;
+limit_clause = "LIMIT" literal_value;
 
-# TODO: Extract AND and OR to a new rule
-expr = expr ("=" | "<>" | "<" | "<=" | ">" | ">=" | "AND" | "OR" | "LIKE") expr
+expr = and_expr
+and_expr = or_expr [ "AND" and_expr ]
+or_expr = bool_expr [ "OR" or_expr ]
+bool_expr = unary_expr ("=" | "<>" | "<" | "<=" | ">" | ">=" | "LIKE") unary_expr | unary_expr;
 unary_expr = ("+" | "-" | "NOT") primary_expr;
-primary_expr = literal_value | ident | ident "." ident | "(" expr ")";
+primary_expr = literal_value | ident | ident "." ident | "(" and_expr ")";
 
 ident = [a-zA-Z_][a-zA-Z0-9_]*;
 literal_value = [0-9]+ | [0-9]*.[0-9]+ | "'" [^']* "'" | "NULL";

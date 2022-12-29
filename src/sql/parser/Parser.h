@@ -39,6 +39,9 @@ private:
     std::shared_ptr<Node> parse_order_clause();
     std::shared_ptr<Node> parse_limit_clause();
     std::shared_ptr<Node> parse_expr();
+    std::shared_ptr<Node> parse_and_expr();
+    std::shared_ptr<Node> parse_or_expr();
+    std::shared_ptr<Node> parse_bool_expr();
     std::shared_ptr<Node> parse_unary_expr();
     std::shared_ptr<Node> parse_primary_expr();
     std::shared_ptr<Node> parse_order_list();
@@ -76,6 +79,7 @@ public:
     */
     std::shared_ptr<Node> getRoot() const;
 };
-}
+
+} // namespace sql::parser
 
 #endif //LAMBDADB_PARSER_H

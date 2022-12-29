@@ -304,47 +304,79 @@ std::shared_ptr<Node> Parser::parse_limit_clause() {
 std::shared_ptr<Node> Parser::parse_expr() {
     auto token = lexer.peek_next();
     std::shared_ptr<NodeExpression> expr = std::make_shared<NodeExpression>(token.position);
-    expr->left = parse_unary_expr();
+    
+    expr->and_expr = parse_and_expr();
+
+    return expr;
+}
+
+std::shared_ptr<Node> Parser::parse_and_expr() {
+    auto token = lexer.peek_next();
+    std::shared_ptr<NodeAndExpression> and_expr = std::make_shared<NodeAndExpression>(token.position);
+
+    and_expr->or_expr = parse_or_expr();
+
+    token = lexer.peek_next();
+    while (token.type == TokenType::AND) {
+        lexer.next();
+        and_expr->_and = std::make_shared<NodeAnd>(token.position);
+        and_expr->and_expr = parse_or_expr();
+        token = lexer.peek_next();
+    }
+
+    return and_expr;
+}
+
+std::shared_ptr<Node> Parser::parse_or_expr() {
+    auto token = lexer.peek_next();
+    std::shared_ptr<NodeOrExpression> or_expr = std::make_shared<NodeOrExpression>(token.position);
+
+    or_expr->bool_expr = parse_bool_expr();
+
+    token = lexer.peek_next();
+    while (token.type == TokenType::OR) {
+        lexer.next();
+        or_expr->_or = std::make_shared<NodeOr>(token.position);
+        or_expr->or_expr = parse_or_expr();
+        token = lexer.peek_next();
+    }
+
+    return or_expr;
+}
+
+std::shared_ptr<Node> Parser::parse_bool_expr() {
+    auto token = lexer.peek_next();
+    std::shared_ptr<NodeBoolExpression> bool_expr = std::make_shared<NodeBoolExpression>(token.position);
+
+    bool_expr->left = parse_unary_expr();
 
     token = lexer.next();
     switch (token.type) {
-        case TokenType::AND:
-            expr->_and = std::make_shared<NodeAnd>(token.position);
-            expr->right = parse_expr();
-            break;
-        case TokenType::OR:
-            expr->_or = std::make_shared<NodeOr>(token.position);
-            expr->right = parse_expr();
-            break;
-        case TokenType::LESS:
-            expr->_lt = std::make_shared<NodeLess>(token.position);
-            expr->right = parse_expr();
-            break;
-        case TokenType::GREATER:
-            expr->_gt = std::make_shared<NodeGreater>(token.position);
-            expr->right = parse_expr();
-            break;
         case TokenType::EQUAL:
-            expr->_eq = std::make_shared<NodeEqual>(token.position);
-            expr->right = parse_expr();
+            bool_expr->_equal = std::make_shared<NodeEqual>(token.position);
             break;
         case TokenType::NOT_EQUAL:
-            expr->_neq = std::make_shared<NodeNotEqual>(token.position);
-            expr->right = parse_expr();
+            bool_expr->_not_equal = std::make_shared<NodeNotEqual>(token.position);
+            break;
+        case TokenType::LESS:
+            bool_expr->_less = std::make_shared<NodeLess>(token.position);
             break;
         case TokenType::LESS_EQUAL:
-            expr->_lte = std::make_shared<NodeLessEqual>(token.position);
-            expr->right = parse_expr();
+            bool_expr->_less_equal = std::make_shared<NodeLessEqual>(token.position);
+            break;
+        case TokenType::GREATER:
+            bool_expr->_greater = std::make_shared<NodeGreater>(token.position);
             break;
         case TokenType::GREATER_EQUAL:
-            expr->_gte = std::make_shared<NodeGreaterEqual>(token.position);
-            expr->right = parse_expr();
+            bool_expr->_greater_equal = std::make_shared<NodeGreaterEqual>(token.position);
             break;
         default:
-            return expr->left;
+            break;
     }
 
-    return expr;
+    bool_expr->right = parse_unary_expr();
+
+    return bool_expr;
 }
 
 std::shared_ptr<Node> Parser::parse_unary_expr() {
