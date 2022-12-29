@@ -82,12 +82,12 @@ int main()
 
         parser.print(std::cout);
 
-        /*sql::ast::AST ast(parser, repo);
+        sql::ast::AST ast(parser, repo);
         ast.analyze();
 
         ast.print(std::cout);
 
-        std::string database = "cpp_test";
+        /*std::string database = "cpp_test";
         StorageService storageService("serverless-db-9umfiaj");
         Database db(database, storageService);
 

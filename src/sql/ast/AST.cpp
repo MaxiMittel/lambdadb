@@ -153,6 +153,110 @@ std::shared_ptr<Node> AST::analyzeStatement(parser::NodeSelectStmt* node) {
 }
 
 std::shared_ptr<Node> AST::analyzeStatement(parser::NodeWhereClause* node) {
-    std::ignore = node;
-    return nullptr;
+    std::shared_ptr<ExpressionNode> expressionNode = std::make_shared<ExpressionNode>(node->getPosition(), repository);
+    parser::NodeExpression* expr = static_cast<parser::NodeExpression*>(node->expr.get());
+    parser::NodeAndExpression* andExpr = static_cast<parser::NodeAndExpression*>(expr->and_expr.get());
+
+    expressionNode->setAndExpr(analyzeStatement(static_cast<parser::NodeAndExpression*>(andExpr)));
+
+    return expressionNode;
+}
+
+std::shared_ptr<ExpressionBaseNode> AST::analyzeStatement(parser::NodeAndExpression* node) {
+    std::shared_ptr<AndExpressionNode> andExpressionNode = std::make_shared<AndExpressionNode>(node->getPosition(), repository);
+    parser::NodeOrExpression* orExpr = static_cast<parser::NodeOrExpression*>(node->or_expr.get());
+    parser::NodeAndExpression* andExpr = static_cast<parser::NodeAndExpression*>(node->and_expr.get());
+
+    if (orExpr != nullptr) {
+        andExpressionNode->setOrExpr(analyzeStatement(static_cast<parser::NodeOrExpression*>(orExpr)));
+    }
+
+    if (andExpr != nullptr) {
+        andExpressionNode->setAndExpr(analyzeStatement(static_cast<parser::NodeAndExpression*>(andExpr)));
+    }
+
+    return andExpressionNode;
+}
+
+std::shared_ptr<ExpressionBaseNode> AST::analyzeStatement(parser::NodeOrExpression* node) {
+    std::shared_ptr<OrExpressionNode> orExpressionNode = std::make_shared<OrExpressionNode>(node->getPosition(), repository);
+    parser::NodeBoolExpression* boolExpr = static_cast<parser::NodeBoolExpression*>(node->bool_expr.get());
+    parser::NodeOrExpression* orExpr = static_cast<parser::NodeOrExpression*>(node->or_expr.get());
+
+    if (boolExpr != nullptr) {
+        orExpressionNode->setBoolExpr(analyzeStatement(static_cast<parser::NodeBoolExpression*>(boolExpr)));
+    }
+
+    if (orExpr != nullptr) {
+        orExpressionNode->setOrExpr(analyzeStatement(static_cast<parser::NodeOrExpression*>(orExpr)));
+    }
+
+    return orExpressionNode;
+}
+
+std::shared_ptr<ExpressionBaseNode> AST::analyzeStatement(parser::NodeBoolExpression* node) {
+    std::shared_ptr<BoolExpressionNode> boolExpressionNode = std::make_shared<BoolExpressionNode>(node->getPosition(), repository);
+    parser::NodePrimaryExpression* left = static_cast<parser::NodePrimaryExpression*>(node->left.get());
+    parser::NodePrimaryExpression* right = static_cast<parser::NodePrimaryExpression*>(node->right.get());
+
+    if (left != nullptr) {
+        boolExpressionNode->setLeft(analyzeStatement(static_cast<parser::NodePrimaryExpression*>(left)));
+    }
+
+    if (right != nullptr) {
+        boolExpressionNode->setRight(analyzeStatement(static_cast<parser::NodePrimaryExpression*>(right)));
+    }
+
+    if (node->_equal != nullptr) {
+        boolExpressionNode->setOperator(BoolOperator::EQUAL);
+    }
+
+    if (node->_not_equal != nullptr) {
+        boolExpressionNode->setOperator(BoolOperator::NOT_EQUAL);
+    }
+
+    if (node->_less != nullptr) {
+        boolExpressionNode->setOperator(BoolOperator::LESS);
+    }
+
+    if (node->_greater != nullptr) {
+        boolExpressionNode->setOperator(BoolOperator::GREATER);
+    }
+
+    if (node->_less_equal != nullptr) {
+        boolExpressionNode->setOperator(BoolOperator::LESS_EQUAL);
+    }
+
+    if (node->_greater_equal != nullptr) {
+        boolExpressionNode->setOperator(BoolOperator::GREATER_EQUAL);
+    }
+
+    return boolExpressionNode;
+}
+
+std::shared_ptr<ExpressionBaseNode> AST::analyzeStatement(parser::NodeUnaryExpression* node) {
+    std::shared_ptr<UnaryExpressionNode> unaryExpressionNode = std::make_shared<UnaryExpressionNode>(node->getPosition(), repository);
+    parser::NodePrimaryExpression* primaryExpr = static_cast<parser::NodePrimaryExpression*>(node->primary_expr.get());
+
+    if (node->_not != nullptr) {
+        unaryExpressionNode->setOperator(UnaryOperator::NOT);
+    }
+
+    if (node->_minus != nullptr) {
+        unaryExpressionNode->setOperator(UnaryOperator::MINUS);
+    }
+
+    if (primaryExpr != nullptr) {
+        unaryExpressionNode->setPrimaryExpr(analyzeStatement(static_cast<parser::NodePrimaryExpression*>(primaryExpr)));
+    }
+    
+    return unaryExpressionNode;
+}
+
+std::shared_ptr<ExpressionBaseNode> AST::analyzeStatement(parser::NodePrimaryExpression* node) {
+    std::shared_ptr<PrimaryExpressionNode> primaryExpressionNode = std::make_shared<PrimaryExpressionNode>(node->getPosition(), repository);
+
+    // TODO: Support all primary expressions
+
+    return primaryExpressionNode;
 }

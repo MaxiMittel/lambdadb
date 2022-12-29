@@ -23,6 +23,12 @@ namespace sql::ast
         virtual void visit(const Statement &node) override;
         virtual void visit(const SelectStatment &node) override;
         virtual void visit(const JoinStatement& node) override;
+        virtual void visit(const ExpressionNode& node) override;
+        virtual void visit(const AndExpressionNode& node) override;
+        virtual void visit(const OrExpressionNode& node) override;
+        virtual void visit(const BoolExpressionNode& node) override;
+        virtual void visit(const UnaryExpressionNode& node) override;
+        virtual void visit(const PrimaryExpressionNode& node) override;
     };
 
 }

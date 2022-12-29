@@ -22,6 +22,11 @@ class AST {
     std::shared_ptr<Node> analyzeStatement(parser::NodeStmt* node);
     std::shared_ptr<Node> analyzeStatement(parser::NodeSelectStmt* node);
     std::shared_ptr<Node> analyzeStatement(parser::NodeWhereClause* node);
+    std::shared_ptr<ExpressionBaseNode> analyzeStatement(parser::NodeAndExpression* node);
+    std::shared_ptr<ExpressionBaseNode> analyzeStatement(parser::NodeOrExpression* node);
+    std::shared_ptr<ExpressionBaseNode> analyzeStatement(parser::NodeBoolExpression* node);
+    std::shared_ptr<ExpressionBaseNode> analyzeStatement(parser::NodeUnaryExpression* node);
+    std::shared_ptr<ExpressionBaseNode> analyzeStatement(parser::NodePrimaryExpression* node);
 
     public:
     AST(sql::parser::Parser& parser, Repository& repository);

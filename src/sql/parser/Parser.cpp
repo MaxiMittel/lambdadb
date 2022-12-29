@@ -320,7 +320,7 @@ std::shared_ptr<Node> Parser::parse_and_expr() {
     while (token.type == TokenType::AND) {
         lexer.next();
         and_expr->_and = std::make_shared<NodeAnd>(token.position);
-        and_expr->and_expr = parse_or_expr();
+        and_expr->and_expr = parse_and_expr();
         token = lexer.peek_next();
     }
 

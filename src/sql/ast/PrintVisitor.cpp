@@ -98,3 +98,97 @@ void PrintVisitor::visit(const JoinStatement& node) {
     out << "N" << node_count << "[label=\"" << node.getRight().name << "\"]" << std::endl;
 }
 
+void PrintVisitor::visit(const ExpressionNode& node) {
+    int current_node = ++node_count;
+    out << "N" << current_node << std::endl;
+    out << "N" << current_node << "[label=\"Expression\"]" << std::endl;
+
+    if (node.getAndExpr() != nullptr) {
+        out << "N" << current_node << " -> ";
+        node.getAndExpr()->accept(*this);
+    }
+}
+
+void PrintVisitor::visit(const AndExpressionNode& node) {
+    int current_node = ++node_count;
+    out << "N" << current_node << std::endl;
+    out << "N" << current_node << "[label=\"And\"]" << std::endl;
+
+    if (node.getOrExpr() != nullptr) {
+        out << "N" << current_node << " -> ";
+        node.getOrExpr()->accept(*this);
+    }
+
+    if (node.getAndExpr() != nullptr) {
+        out << "N" << current_node << " -> ";
+        node.getAndExpr()->accept(*this);
+    }
+}
+
+void PrintVisitor::visit(const OrExpressionNode& node) {
+    int current_node = ++node_count;
+    out << "N" << current_node << std::endl;
+    out << "N" << current_node << "[label=\"Or\"]" << std::endl;
+
+    if (node.getBoolExpr() != nullptr) {
+        out << "N" << current_node << " -> ";
+        node.getBoolExpr()->accept(*this);
+    }
+
+    if (node.getOrExpr() != nullptr) {
+        out << "N" << current_node << " -> ";
+        node.getOrExpr()->accept(*this);
+    }
+}
+
+void PrintVisitor::visit(const BoolExpressionNode& node) {
+    int current_node = ++node_count;
+    out << "N" << current_node << std::endl;
+    out << "N" << current_node << "[label=\"Bool\"]" << std::endl;
+
+    if (node.getLeft() != nullptr) {
+        out << "N" << current_node << " -> ";
+        node.getLeft()->accept(*this);
+    }
+
+    // Operator
+    node_count++;
+    int op_node = node_count;
+    out << "N" << current_node << " -> N" << op_node << std::endl;
+    out << "N" << op_node << "[label=\"Operator\"]" << std::endl;
+    node_count++;
+    out << "N" << node_count - 1 << " -> N" << node_count << std::endl;
+    out << "N" << node_count << "[label=\"" << node.getOperator() << "\"]" << std::endl;
+
+    if (node.getRight() != nullptr) {
+        out << "N" << current_node << " -> ";
+        node.getRight()->accept(*this);
+    }
+}
+
+void PrintVisitor::visit(const UnaryExpressionNode& node) {
+    int current_node = ++node_count;
+    out << "N" << current_node << std::endl;
+    out << "N" << current_node << "[label=\"Unary\"]" << std::endl;
+
+    // Operator
+    node_count++;
+    int op_node = node_count;
+    out << "N" << current_node << " -> N" << op_node << std::endl;
+    out << "N" << op_node << "[label=\"Operator\"]" << std::endl;
+    node_count++;
+    out << "N" << node_count - 1 << " -> N" << node_count << std::endl;
+    out << "N" << node_count << "[label=\"" << node.getOperator() << "\"]" << std::endl;
+
+    if (node.getPrimaryExpr() != nullptr) {
+        out << "N" << current_node << " -> ";
+        node.getPrimaryExpr()->accept(*this);
+    }
+}
+
+void PrintVisitor::visit(const PrimaryExpressionNode& node) {
+    std::ignore = node;
+    int current_node = ++node_count;
+    out << "N" << current_node << std::endl;
+    out << "N" << current_node << "[label=\"Primary\"]" << std::endl;
+}

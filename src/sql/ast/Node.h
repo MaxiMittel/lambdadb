@@ -37,8 +37,17 @@ enum ASTNodeType {
     UPDATE_STATEMENT,
     DELETE_STATEMENT,
 
+    // Clauses
     JOIN_CLAUSE,
     WHERE_CLAUSE,
+
+    // Expressions
+    EXPRESSION,
+    AND_EXPRESSION,
+    OR_EXPRESSION,
+    BOOL_EXPRESSION,
+    UNARY_EXPRESSION,
+    PRIMARY_EXPRESSION,
 
     // Data Definition Statements
     CREATE_TABLE_STATEMENT,
@@ -55,6 +64,20 @@ enum JoinType {
     LEFT,
     RIGHT,
     FULL
+};
+
+enum BoolOperator {
+    EQUAL,
+    NOT_EQUAL,
+    LESS,
+    LESS_EQUAL,
+    GREATER,
+    GREATER_EQUAL
+};
+
+enum UnaryOperator {
+    NOT,
+    MINUS
 };
 
 class Node {
@@ -171,6 +194,140 @@ public:
 
     void evaluate(Evaluator& context) override;
 };
+
+class ExpressionBaseNode : public Node {
+public:
+    ExpressionBaseNode(ASTNodeType type, Position position, Repository &repository);
+
+    virtual bool evaluateExpression(std::vector<std::shared_ptr<DataEntryBase>> const& entry) = 0;
+};
+
+class ExpressionNode : public ExpressionBaseNode {
+    private:
+    std::shared_ptr<ExpressionBaseNode> and_expr;
+
+public:
+    ExpressionNode(Position position, Repository &repository);
+
+    void setAndExpr(std::shared_ptr<ExpressionBaseNode> and_expr);
+
+    std::shared_ptr<ExpressionBaseNode> getAndExpr() const;
+
+    void accept(Visitor &visitor) override;
+
+    void evaluate(Evaluator& context) override;
+
+    bool evaluateExpression(std::vector<std::shared_ptr<DataEntryBase>> const& entry) override;
+};
+
+class AndExpressionNode : public ExpressionBaseNode {
+private:
+    std::shared_ptr<ExpressionBaseNode> or_expr;
+    std::shared_ptr<ExpressionBaseNode> and_expr;
+
+public:
+    AndExpressionNode(Position position, Repository &repository);
+
+    void setAndExpr(std::shared_ptr<ExpressionBaseNode> and_expr);
+
+    void setOrExpr(std::shared_ptr<ExpressionBaseNode> or_expr);
+
+    std::shared_ptr<ExpressionBaseNode> getAndExpr() const;
+
+    std::shared_ptr<ExpressionBaseNode> getOrExpr() const;
+
+    void accept(Visitor &visitor) override;
+
+    void evaluate(Evaluator& context) override;
+
+    bool evaluateExpression(std::vector<std::shared_ptr<DataEntryBase>> const& entry) override;
+};
+
+class OrExpressionNode : public ExpressionBaseNode {
+private:
+    std::shared_ptr<ExpressionBaseNode> bool_expr;
+    std::shared_ptr<ExpressionBaseNode> or_expr;
+
+public:
+    OrExpressionNode(Position position, Repository &repository);
+
+    void setOrExpr(std::shared_ptr<ExpressionBaseNode> or_expr);
+
+    void setBoolExpr(std::shared_ptr<ExpressionBaseNode> bool_expr);
+
+    std::shared_ptr<ExpressionBaseNode> getOrExpr() const;
+
+    std::shared_ptr<ExpressionBaseNode> getBoolExpr() const;
+
+    void accept(Visitor &visitor) override;
+
+    void evaluate(Evaluator& context) override;
+
+    bool evaluateExpression(std::vector<std::shared_ptr<DataEntryBase>> const& entry) override;
+};
+
+class BoolExpressionNode : public ExpressionBaseNode {
+private:
+    std::shared_ptr<ExpressionBaseNode> left;
+    std::shared_ptr<ExpressionBaseNode> right;
+    BoolOperator op; // TODO: Split into seperate nodes?
+
+public:
+    BoolExpressionNode(Position position, Repository &repository);
+
+    void setLeft(std::shared_ptr<ExpressionBaseNode> left);
+
+    void setRight(std::shared_ptr<ExpressionBaseNode> right);
+
+    void setOperator(BoolOperator op);
+
+    std::shared_ptr<ExpressionBaseNode> getLeft() const;
+
+    std::shared_ptr<ExpressionBaseNode> getRight() const;
+
+    BoolOperator getOperator() const;
+
+    void accept(Visitor &visitor) override;
+
+    void evaluate(Evaluator& context) override;
+
+    bool evaluateExpression(std::vector<std::shared_ptr<DataEntryBase>> const& entry) override;
+};
+
+class UnaryExpressionNode : public ExpressionBaseNode {
+private:
+    std::shared_ptr<ExpressionBaseNode> primary_expr;
+    UnaryOperator op;
+
+public:
+    UnaryExpressionNode(Position position, Repository &repository);
+
+    void setPrimaryExpr(std::shared_ptr<ExpressionBaseNode> primary_expr);
+
+    void setOperator(UnaryOperator op);
+
+    std::shared_ptr<ExpressionBaseNode> getPrimaryExpr() const;
+
+    UnaryOperator getOperator() const;
+
+    void accept(Visitor &visitor) override;
+
+    void evaluate(Evaluator& context) override;
+
+    bool evaluateExpression(std::vector<std::shared_ptr<DataEntryBase>> const& entry) override;
+};
+
+class PrimaryExpressionNode : public ExpressionBaseNode {
+public:
+    PrimaryExpressionNode(Position position, Repository &repository);
+
+    void accept(Visitor &visitor) override;
+
+    void evaluate(Evaluator& context) override;
+
+    bool evaluateExpression(std::vector<std::shared_ptr<DataEntryBase>> const& entry) override;
+};
+
 
 } // namespace sql::ast
 
