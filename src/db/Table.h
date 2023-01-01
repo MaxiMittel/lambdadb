@@ -67,14 +67,14 @@ public:
      * Returns the items of the table
      * @return Items of the table
      */
-    /*[[nodiscard]]*/ std::vector<std::vector<std::shared_ptr<DataEntryBase>>> getItems() const;
+    /*[[nodiscard]]*/ std::vector<std::vector<std::shared_ptr<DataEntry>>> getItems() const;
 
     /**
      * Returns the items in a hashmap with the key as the key of the item
      * @param key The key of the item
      * @return Items of the table
      */
-    /*[[nodiscard]]*/ std::unordered_map<std::string, std::vector<std::shared_ptr<DataEntryBase>>> getItems(std::string key) const;
+    /*[[nodiscard]]*/ std::unordered_map<std::string, std::vector<std::shared_ptr<DataEntry>>> getItems(std::string key) const;
 
     /**
      * Returns the row count of the table
@@ -86,7 +86,7 @@ public:
      * Inserts a new item into the table
      * @param item The item to insert
      */
-    void insertItem(std::vector<std::shared_ptr<DataEntryBase>> item);
+    void insertItem(std::vector<std::shared_ptr<DataEntry>> item);
 
     /**
      * Deletes an item from the table
@@ -99,7 +99,7 @@ public:
      * @param key The key of the item to update
      * @param item The new item
      */
-    void updateItem(std::string key, std::vector<std::shared_ptr<DataEntryBase>> item);
+    void updateItem(std::string key, std::vector<std::shared_ptr<DataEntry>> item);
 
 
     /**

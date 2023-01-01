@@ -12,7 +12,7 @@ namespace db {
 class EvaluationTable {
     private:
     std::vector<Column> columns;
-    std::vector<std::vector<std::shared_ptr<DataEntryBase>>> items;
+    std::vector<std::vector<std::shared_ptr<DataEntry>>> items;
 
     public:
     /**
@@ -20,7 +20,7 @@ class EvaluationTable {
      * @param columns Columns of the table
      * @param items Items of the table
      */
-    EvaluationTable(std::vector<Column> columns, std::vector<std::vector<std::shared_ptr<DataEntryBase>>> items);
+    EvaluationTable(std::vector<Column> columns, std::vector<std::vector<std::shared_ptr<DataEntry>>> items);
 
     /**
      * Creates a new evaluation table
@@ -37,13 +37,13 @@ class EvaluationTable {
      * Returns the items of the table
      * @return Items of the table
      */
-    [[nodiscard]] std::vector<std::vector<std::shared_ptr<DataEntryBase>>> getItems() const;
+    [[nodiscard]] std::vector<std::vector<std::shared_ptr<DataEntry>>> getItems() const;
 
     /**
      * Sets the items of the table
      * @param items Items of the table
      */
-    void setItems(const std::vector<std::vector<std::shared_ptr<DataEntryBase>>> &items);
+    void setItems(const std::vector<std::vector<std::shared_ptr<DataEntry>>> &items);
 
     /**
      * Set the columns of the table

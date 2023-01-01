@@ -50,22 +50,22 @@ std::vector<Column> Table::getColumns() const {
     return columns;
 }
 
-std::vector<std::vector<std::shared_ptr<DataEntryBase>>> Table::getItems() const {
-    std::vector<std::vector<std::shared_ptr<DataEntryBase>>> items;
+std::vector<std::vector<std::shared_ptr<DataEntry>>> Table::getItems() const {
+    std::vector<std::vector<std::shared_ptr<DataEntry>>> items;
 
     // Load the items from the storage
     auto content = storageService.readObject(DATA_KEY);
 
     for (size_t i = 0; i < content.size; i += item_length) {
         size_t offset = i;
-        std::vector<std::shared_ptr<DataEntryBase>> item;
+        std::vector<std::shared_ptr<DataEntry>> item;
         for (size_t column_index = 0; column_index < columns.size(); column_index++) {
             switch (columns[column_index].type) {
                 case DataType::INTEGER:
-                    item.emplace_back(std::make_shared<DataEntry<int32_t>>(*(int32_t*)(content.data + offset), DataType::INTEGER));
+                    item.emplace_back(std::make_shared<DataEntryInteger>(*(int32_t*)(content.data + offset)));
                     break;
                 case DataType::VARCHAR:
-                    item.emplace_back(std::make_shared<DataEntry<std::string>>(std::string(reinterpret_cast<char*>(content.data + offset), columns[column_index].size), DataType::VARCHAR));
+                    item.emplace_back(std::make_shared<DataEntryVarchar>(std::string(reinterpret_cast<char*>(content.data + offset), columns[column_index].size)));
                     break;
                 case DataType::SQL_NULL:
                     item.emplace_back(std::make_shared<DataEntryNull>());
@@ -80,8 +80,8 @@ std::vector<std::vector<std::shared_ptr<DataEntryBase>>> Table::getItems() const
     return items;
 }
 
-std::unordered_map<std::string, std::vector<std::shared_ptr<DataEntryBase>>> Table::getItems(std::string key) const {
-    std::unordered_map<std::string, std::vector<std::shared_ptr<DataEntryBase>>> items;
+std::unordered_map<std::string, std::vector<std::shared_ptr<DataEntry>>> Table::getItems(std::string key) const {
+    std::unordered_map<std::string, std::vector<std::shared_ptr<DataEntry>>> items;
 
     size_t key_index = 0;
     for (size_t i = 0; i < columns.size(); i++) {
@@ -96,14 +96,14 @@ std::unordered_map<std::string, std::vector<std::shared_ptr<DataEntryBase>>> Tab
 
     for (size_t i = 0; i < content.size; i += item_length) {
         size_t offset = i;
-        std::vector<std::shared_ptr<DataEntryBase>> item;
+        std::vector<std::shared_ptr<DataEntry>> item;
         for (size_t column_index = 0; column_index < columns.size(); column_index++) {
             switch (columns[column_index].type) {
                 case DataType::INTEGER:
-                    item.emplace_back(std::make_shared<DataEntry<int32_t>>(*(int32_t*)(content.data + offset), DataType::INTEGER));
+                    item.emplace_back(std::make_shared<DataEntryInteger>(*(int32_t*)(content.data + offset)));
                     break;
                 case DataType::VARCHAR:
-                    item.emplace_back(std::make_shared<DataEntry<std::string>>(std::string(reinterpret_cast<char*>(content.data + offset), columns[column_index].size), DataType::VARCHAR));
+                    item.emplace_back(std::make_shared<DataEntryVarchar>(std::string(reinterpret_cast<char*>(content.data + offset), columns[column_index].size)));
                     break;
                 case DataType::SQL_NULL:
                     item.emplace_back(std::make_shared<DataEntryNull>());
@@ -118,7 +118,7 @@ std::unordered_map<std::string, std::vector<std::shared_ptr<DataEntryBase>>> Tab
     return items;
 }
 
-void Table::insertItem(std::vector<std::shared_ptr<DataEntryBase>> item) {
+void Table::insertItem(std::vector<std::shared_ptr<DataEntry>> item) {
     // Check if the item has the correct length
     if (item.size() != columns.size()) {
         throw std::runtime_error("Item has the wrong length");
@@ -138,10 +138,10 @@ void Table::insertItem(std::vector<std::shared_ptr<DataEntryBase>> item) {
     for (size_t i = 0; i < item.size(); i++) {
         switch (item[i]->getType()) {
             case DataType::INTEGER:
-                *(int32_t*)(data + offset) = static_cast<DataEntry<int32_t>*>(item[i].get())->getValue();
+                *(int32_t*)(data + offset) = static_cast<DataEntryInteger*>(item[i].get())->getValue();
                 break;
             case DataType::VARCHAR: {
-                std::string string_value = static_cast<DataEntry<std::string>*>(item[i].get())->getValue();
+                std::string string_value = static_cast<DataEntryVarchar*>(item[i].get())->getValue();
                 memcpy(data + offset, string_value.c_str(), string_value.length());
                 break;
             }
@@ -160,10 +160,10 @@ void Table::insertItem(std::vector<std::shared_ptr<DataEntryBase>> item) {
         if (columns[i].primary_key) {
             switch (columns[i].type) {
                 case DataType::INTEGER:
-                    primary_key = std::to_string(static_cast<DataEntry<int32_t>*>(item[i].get())->getValue());
+                    primary_key = std::to_string(static_cast<DataEntryInteger*>(item[i].get())->getValue());
                     break;
                 case DataType::VARCHAR:
-                    primary_key = static_cast<DataEntry<std::string>*>(item[i].get())->getValue();
+                    primary_key = static_cast<DataEntryVarchar*>(item[i].get())->getValue();
                     break;
                 case DataType::SQL_NULL:
                     break;
@@ -185,7 +185,7 @@ void Table::deleteItem(std::string key) {
     //storageService.deleteBytes(DATA_KEY, offset, item_length);
 }
 
-void Table::updateItem(std::string key, std::vector<std::shared_ptr<DataEntryBase>> item) {
+void Table::updateItem(std::string key, std::vector<std::shared_ptr<DataEntry>> item) {
     // TODO: Implement
     std::cout << "Not implemented: UPDATE " << key << std::endl;
     std::ignore = key;

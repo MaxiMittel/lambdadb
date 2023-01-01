@@ -8,17 +8,17 @@ using namespace db;
 
 EvaluationTable::EvaluationTable() = default;
 
-EvaluationTable::EvaluationTable(std::vector<Column> columns, std::vector<std::vector<std::shared_ptr<DataEntryBase>>> items) : columns(std::move(columns)), items(std::move(items)) {}
+EvaluationTable::EvaluationTable(std::vector<Column> columns, std::vector<std::vector<std::shared_ptr<DataEntry>>> items) : columns(std::move(columns)), items(std::move(items)) {}
 
 std::vector<Column> EvaluationTable::getColumns() const {
     return columns;
 }
 
-std::vector<std::vector<std::shared_ptr<DataEntryBase>>> EvaluationTable::getItems() const {
+std::vector<std::vector<std::shared_ptr<DataEntry>>> EvaluationTable::getItems() const {
     return items;
 }
 
-void EvaluationTable::setItems(const std::vector<std::vector<std::shared_ptr<DataEntryBase>>> &items) {
+void EvaluationTable::setItems(const std::vector<std::vector<std::shared_ptr<DataEntry>>> &items) {
     this->items = items;
 }
 
@@ -42,10 +42,10 @@ void EvaluationTable::print(std::ostream &out) {
         for (size_t i = 0; i < columns.size(); i++) {
             switch (columns[i].type) {
                 case DataType::INTEGER:
-                    std::cout << static_cast<DataEntry<int32_t>*>(item[i].get())->getValue() << " ";
+                    std::cout << static_cast<DataEntryInteger*>(item[i].get())->getValue() << " ";
                     break;
                 case DataType::VARCHAR:
-                    std::cout << static_cast<DataEntry<std::string>*>(item[i].get())->getValue() << " ";
+                    std::cout << static_cast<DataEntryVarchar*>(item[i].get())->getValue() << " ";
                     break;
                 case DataType::SQL_NULL:
                     std::cout << "NULL ";

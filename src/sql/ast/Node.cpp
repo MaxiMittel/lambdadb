@@ -77,22 +77,22 @@ void SelectStatment::accept(Visitor &visitor) {
 
 void SelectStatment::evaluate(Evaluator &evaluator) {
     for (auto &table : tables) {
-        std::shared_ptr<Table> tableRef = evaluator.getDatabase().getTable(std::string(table.name));
+        std::shared_ptr<db::Table> tableRef = evaluator.getDatabase().getTable(std::string(table.name));
         
         if (evaluator.getEvaluationTable().get()->getRowCount() == 0) {
             evaluator.getEvaluationTable().get()->setColumns(tableRef->getColumns());
             evaluator.getEvaluationTable().get()->setItems(tableRef->getItems());
         } else {
             // Merge tables
-            std::vector<Column> newColumns;
+            std::vector<db::Column> newColumns;
             newColumns.insert(newColumns.end(), evaluator.getEvaluationTable().get()->getColumns().begin(), evaluator.getEvaluationTable().get()->getColumns().end());
             newColumns.insert(newColumns.end(), tableRef->getColumns().begin(), tableRef->getColumns().end());
             
             // Cross join
-            std::vector<std::vector<std::shared_ptr<DataEntryBase>>> newItems;
+            std::vector<std::vector<std::shared_ptr<db::DataEntry>>> newItems;
             for (auto &item1 : evaluator.getEvaluationTable().get()->getItems()) {
                 for (auto &item2 : tableRef->getItems()) {
-                    std::vector<std::shared_ptr<DataEntryBase>> newItem;
+                    std::vector<std::shared_ptr<db::DataEntry>> newItem;
                     newItem.insert(newItem.end(), item1.begin(), item1.end());
                     newItem.insert(newItem.end(), item2.begin(), item2.end());
                     newItems.emplace_back(newItem);
@@ -152,9 +152,9 @@ void JoinStatement::accept(Visitor &visitor) {
 
 void JoinStatement::evaluate(Evaluator &evaluator) {
     // TODO: Check if key is in left or right of the expression
-    std::unordered_map<std::string, std::vector<std::shared_ptr<DataEntryBase>>> items = evaluator.getDatabase().getTable(std::string(this->getTable().name)).get()->getItems(this->getRight().name);
+    std::unordered_map<std::string, std::vector<std::shared_ptr<db::DataEntry>>> items = evaluator.getDatabase().getTable(std::string(this->getTable().name)).get()->getItems(this->getRight().name);
 
-    std::vector<std::vector<std::shared_ptr<DataEntryBase>>> newItems;
+    std::vector<std::vector<std::shared_ptr<db::DataEntry>>> newItems;
 
     // TODO: Check if key exists in table
 
@@ -169,7 +169,7 @@ void JoinStatement::evaluate(Evaluator &evaluator) {
     switch (type) {
         case JoinType::LEFT:
             for (auto &item : evaluator.getEvaluationTable().get()->getItems()) {
-                std::vector<std::shared_ptr<DataEntryBase>> newItem;
+                std::vector<std::shared_ptr<db::DataEntry>> newItem;
 
                 // Check if key exists in map
                 bool found = items.count(item[key_index].get()->toString()) > 0;
@@ -179,8 +179,8 @@ void JoinStatement::evaluate(Evaluator &evaluator) {
                     newItem.insert(newItem.end(), items[item[key_index].get()->toString()].begin(), items[item[key_index].get()->toString()].end());
                 } else {
                     newItem.insert(newItem.end(), item.begin(), item.end());
-                    for (auto &column : evaluator.getDatabase().getTable(std::string(this->getTable().name)).get()->getColumns()) {
-                        newItem.emplace_back(std::make_shared<DataEntryNull>());
+                    for (size_t i = 0; i < evaluator.getDatabase().getTable(std::string(this->getTable().name)).get()->getColumns().size(); i++) {
+                        newItem.emplace_back(std::make_shared<db::DataEntryNull>());
                     }
                 }
 
@@ -189,7 +189,7 @@ void JoinStatement::evaluate(Evaluator &evaluator) {
             break;
         case JoinType::RIGHT:
             for (auto &item : evaluator.getEvaluationTable().get()->getItems()) {
-                std::vector<std::shared_ptr<DataEntryBase>> newItem;
+                std::vector<std::shared_ptr<db::DataEntry>> newItem;
 
                 // Check if key exists in map
                 bool found = items.count(item[key_index].get()->toString()) > 0;
@@ -198,8 +198,8 @@ void JoinStatement::evaluate(Evaluator &evaluator) {
                     newItem.insert(newItem.end(), items[item[key_index].get()->toString()].begin(), items[item[key_index].get()->toString()].end());
                     newItem.insert(newItem.end(), item.begin(), item.end());
                 } else {
-                    for (auto &column : evaluator.getDatabase().getTable(std::string(this->getTable().name)).get()->getColumns()) {
-                        newItem.emplace_back(std::make_shared<DataEntryNull>());
+                    for (size_t i = 0; i < evaluator.getDatabase().getTable(std::string(this->getTable().name)).get()->getColumns().size(); i++) {
+                        newItem.emplace_back(std::make_shared<db::DataEntryNull>());
                     }
                     newItem.insert(newItem.end(), item.begin(), item.end());
                 }
@@ -209,7 +209,7 @@ void JoinStatement::evaluate(Evaluator &evaluator) {
             break;
         case JoinType::INNER:
             for (auto &item : evaluator.getEvaluationTable().get()->getItems()) {
-                std::vector<std::shared_ptr<DataEntryBase>> newItem;
+                std::vector<std::shared_ptr<db::DataEntry>> newItem;
 
                 // Check if key exists in map
                 bool found = items.count(item[key_index].get()->toString()) > 0;
@@ -252,7 +252,7 @@ void ExpressionNode::evaluate(Evaluator &evaluator) {
     and_expr->evaluate(evaluator);
 }
 
-bool ExpressionNode::evaluateExpression(std::vector<std::shared_ptr<DataEntryBase>> const& entry) {
+bool ExpressionNode::evaluateExpression(std::vector<std::shared_ptr<db::DataEntry>> const& entry) {
     std::ignore = entry;
     return true;
 }
@@ -279,7 +279,7 @@ void AndExpressionNode::accept(Visitor &visitor) {
     visitor.visit(*this);
 }
 
-bool AndExpressionNode::evaluateExpression(std::vector<std::shared_ptr<DataEntryBase>> const& entry) {
+bool AndExpressionNode::evaluateExpression(std::vector<std::shared_ptr<db::DataEntry>> const& entry) {
     bool or_result = or_expr->evaluateExpression(entry);
     if (!or_result) return false;
 
@@ -312,7 +312,7 @@ void OrExpressionNode::accept(Visitor &visitor) {
     visitor.visit(*this);
 }
 
-bool OrExpressionNode::evaluateExpression(std::vector<std::shared_ptr<DataEntryBase>> const& entry) {
+bool OrExpressionNode::evaluateExpression(std::vector<std::shared_ptr<db::DataEntry>> const& entry) {
     bool bool_result = bool_expr->evaluateExpression(entry);
     if (bool_result) return true;
 
@@ -353,7 +353,7 @@ void BoolExpressionNode::accept(Visitor &visitor) {
     visitor.visit(*this);
 }
 
-bool BoolExpressionNode::evaluateExpression(std::vector<std::shared_ptr<DataEntryBase>> const& entry) {
+bool BoolExpressionNode::evaluateExpression(std::vector<std::shared_ptr<db::DataEntry>> const& entry) {
     bool left_result = left->evaluateExpression(entry);
     bool right_result = right->evaluateExpression(entry);
 
@@ -402,7 +402,7 @@ void UnaryExpressionNode::accept(Visitor &visitor) {
     visitor.visit(*this);
 }
 
-bool UnaryExpressionNode::evaluateExpression(std::vector<std::shared_ptr<DataEntryBase>> const& entry) {
+bool UnaryExpressionNode::evaluateExpression(std::vector<std::shared_ptr<db::DataEntry>> const& entry) {
     bool primary_result = primary_expr->evaluateExpression(entry);
 
     switch (op) {
@@ -423,7 +423,7 @@ void PrimaryExpressionNode::accept(Visitor &visitor) {
     visitor.visit(*this);
 }
 
-bool PrimaryExpressionNode::evaluateExpression(std::vector<std::shared_ptr<DataEntryBase>> const& entry) {
+bool PrimaryExpressionNode::evaluateExpression(std::vector<std::shared_ptr<db::DataEntry>> const& entry) {
     std::ignore = entry;
     return false;
 }

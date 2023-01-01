@@ -45,15 +45,15 @@ int main()
 
     Table table("user", database, user_columns, storageService);*/
 
-    /*std::vector<std::shared_ptr<DataEntryBase>> user1;
-    user1.emplace_back(std::make_shared<DataEntry<std::string>>("1", DataType::VARCHAR));
-    user1.emplace_back(std::make_shared<DataEntry<std::string>>("John", DataType::VARCHAR));
-    user1.emplace_back(std::make_shared<DataEntry<int32_t>>(20, DataType::INTEGER));
+    /*std::vector<std::shared_ptr<DataEntry>> user1;
+    user1.emplace_back(std::make_shared<DataEntryVarchar>("1", DataType::VARCHAR));
+    user1.emplace_back(std::make_shared<DataEntryVarchar>("John", DataType::VARCHAR));
+    user1.emplace_back(std::make_shared<DataEntryInteger>(20, DataType::INTEGER));
 
-    std::vector<std::shared_ptr<DataEntryBase>> user2;
-    user2.emplace_back(std::make_shared<DataEntry<std::string>>("2", DataType::VARCHAR));
-    user2.emplace_back(std::make_shared<DataEntry<std::string>>("Jane", DataType::VARCHAR));
-    user2.emplace_back(std::make_shared<DataEntry<int32_t>>(21, DataType::INTEGER));
+    std::vector<std::shared_ptr<DataEntry>> user2;
+    user2.emplace_back(std::make_shared<DataEntryVarchar>("2", DataType::VARCHAR));
+    user2.emplace_back(std::make_shared<DataEntryVarchar>("Jane", DataType::VARCHAR));
+    user2.emplace_back(std::make_shared<DataEntryInteger>(21, DataType::INTEGER));
 
     table.insertItem(user1);
     table.insertItem(user2);*/
