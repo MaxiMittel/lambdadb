@@ -3,6 +3,7 @@
 //
 
 #include "DataType.h"
+#include <iostream>
 
 using namespace db;
 
@@ -14,8 +15,7 @@ int32_t DataEntryNull::getValue() const {
     return 0;
 }
 
-void DataEntryNull::setValue(int32_t value) {
-    std::ignore = value;
+void DataEntryNull::setValue([[maybe_unused]] int32_t value) {
     // Do nothing
 }
 

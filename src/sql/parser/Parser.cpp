@@ -4,6 +4,7 @@
 
 #include "Parser.h"
 #include "PrintVisitor.h"
+#include <cassert>
 
 using namespace sql::parser;
 using namespace sql::lexer;
