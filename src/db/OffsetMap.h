@@ -7,6 +7,8 @@
 
 #include "../storage/StorageService.h"
 
+namespace db {
+
 class OffsetMap {
 private:
     StorageService &storageService;
@@ -35,5 +37,7 @@ public:
      */
     void deleteKey(std::string key);
 };
+
+} // namespace db
 
 #endif // LAMBDADB_OFFSETMAP_H

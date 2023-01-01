@@ -7,22 +7,22 @@
 
 using namespace sql::ast;
 
-Evaluator::Evaluator(AST &ast, Database &database) : ast(ast), database(database) {}
+Evaluator::Evaluator(AST &ast, db::Database &database) : ast(ast), database(database) {}
 
-Database &Evaluator::getDatabase() const {
+db::Database &Evaluator::getDatabase() const {
     return database;
 }
 
-EvaluationTable Evaluator::evaluate() {
-    this->evaluationTable = std::make_shared<EvaluationTable>();
+db::EvaluationTable Evaluator::evaluate() {
+    this->evaluationTable = std::make_shared<db::EvaluationTable>();
     ast.getRoot()->evaluate(*this);
     return *evaluationTable;
 }
 
-std::shared_ptr<EvaluationTable> Evaluator::getEvaluationTable() const {
+std::shared_ptr<db::EvaluationTable> Evaluator::getEvaluationTable() const {
     return evaluationTable;
 }
 
-void Evaluator::setEvaluationTable(std::shared_ptr<EvaluationTable> evaluationTable) {
+void Evaluator::setEvaluationTable(std::shared_ptr<db::EvaluationTable> evaluationTable) {
     this->evaluationTable = evaluationTable;
 }

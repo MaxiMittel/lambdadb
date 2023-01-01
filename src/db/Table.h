@@ -11,6 +11,8 @@
 #include "DataType.h"
 #include "../storage/StorageService.h"
 
+namespace db {
+
 struct Column {
     std::string name;
     DataType type;
@@ -68,6 +70,13 @@ public:
     /*[[nodiscard]]*/ std::vector<std::vector<std::shared_ptr<DataEntryBase>>> getItems() const;
 
     /**
+     * Returns the items in a hashmap with the key as the key of the item
+     * @param key The key of the item
+     * @return Items of the table
+     */
+    /*[[nodiscard]]*/ std::unordered_map<std::string, std::vector<std::shared_ptr<DataEntryBase>>> getItems(std::string key) const;
+
+    /**
      * Returns the row count of the table
      * @return Row count of the table
      */
@@ -103,6 +112,8 @@ public:
      */
     Table join(Table other, JoinType type, std::string leftColumn, std::string rightColumn) const;
 };
+
+} // namespace db
 
 
 #endif //LAMBDADB_TABLE_H

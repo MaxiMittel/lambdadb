@@ -68,7 +68,7 @@ int main()
     Aws::InitAPI(options);
     {
 
-        Repository repo("SELECT vorname AS name, age FROM user WHERE a = 5 AND b < c OR leon = 'dumm';");
+        Repository repo("SELECT * FROM user;");
         //Repository repo("UPDATE user SET age = 25, name = 'Maxi' WHERE id = '1' AND 5 < 6;");
         sql::lexer::Lexer lexer(repo);
 
@@ -87,15 +87,15 @@ int main()
 
         ast.print(std::cout);
 
-        /*std::string database = "cpp_test";
+        std::string database = "cpp_test";
         StorageService storageService("serverless-db-9umfiaj");
-        Database db(database, storageService);
+        db::Database db(database, storageService);
 
         sql::ast::Evaluator evalutor(ast, db);
 
-        EvaluationTable result = evalutor.evaluate();
+        db::EvaluationTable result = evalutor.evaluate();
 
-        result.print(std::cout);*/
+        result.print(std::cout);
     } // The SDK must be shutdown before the application terminates.
     Aws::ShutdownAPI(options);
 

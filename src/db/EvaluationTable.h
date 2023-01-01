@@ -7,6 +7,8 @@
 
 #include "Table.h"
 
+namespace db {
+
 class EvaluationTable {
     private:
     std::vector<Column> columns;
@@ -61,5 +63,7 @@ class EvaluationTable {
      */
     void print(std::ostream& out);
 };
+
+} // namespace db
 
 #endif //LAMBDADB_EVALUATION_TABLE_H

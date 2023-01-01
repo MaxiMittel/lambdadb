@@ -10,6 +10,8 @@
 #include "Table.h"
 #include "../storage/StorageService.h"
 
+namespace db {
+
 class Database {
 private:
     std::string name;
@@ -55,5 +57,6 @@ public:
     void dropTable(std::string name);
 };
 
+} // namespace db
 
 #endif //LAMBDADB_DATABASE_H

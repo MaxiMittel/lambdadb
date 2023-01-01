@@ -199,7 +199,7 @@ class ExpressionBaseNode : public Node {
 public:
     ExpressionBaseNode(ASTNodeType type, Position position, Repository &repository);
 
-    virtual bool evaluateExpression(std::vector<std::shared_ptr<DataEntryBase>> const& entry) = 0;
+    virtual bool evaluateExpression(std::vector<std::shared_ptr<db::DataEntryBase>> const& entry) = 0;
 };
 
 class ExpressionNode : public ExpressionBaseNode {
@@ -217,7 +217,7 @@ public:
 
     void evaluate(Evaluator& context) override;
 
-    bool evaluateExpression(std::vector<std::shared_ptr<DataEntryBase>> const& entry) override;
+    bool evaluateExpression(std::vector<std::shared_ptr<db::DataEntryBase>> const& entry) override;
 };
 
 class AndExpressionNode : public ExpressionBaseNode {
@@ -240,7 +240,7 @@ public:
 
     void evaluate(Evaluator& context) override;
 
-    bool evaluateExpression(std::vector<std::shared_ptr<DataEntryBase>> const& entry) override;
+    bool evaluateExpression(std::vector<std::shared_ptr<db::DataEntryBase>> const& entry) override;
 };
 
 class OrExpressionNode : public ExpressionBaseNode {
@@ -263,7 +263,7 @@ public:
 
     void evaluate(Evaluator& context) override;
 
-    bool evaluateExpression(std::vector<std::shared_ptr<DataEntryBase>> const& entry) override;
+    bool evaluateExpression(std::vector<std::shared_ptr<db::DataEntryBase>> const& entry) override;
 };
 
 class BoolExpressionNode : public ExpressionBaseNode {
@@ -291,7 +291,7 @@ public:
 
     void evaluate(Evaluator& context) override;
 
-    bool evaluateExpression(std::vector<std::shared_ptr<DataEntryBase>> const& entry) override;
+    bool evaluateExpression(std::vector<std::shared_ptr<db::DataEntryBase>> const& entry) override;
 };
 
 class UnaryExpressionNode : public ExpressionBaseNode {
@@ -314,7 +314,7 @@ public:
 
     void evaluate(Evaluator& context) override;
 
-    bool evaluateExpression(std::vector<std::shared_ptr<DataEntryBase>> const& entry) override;
+    bool evaluateExpression(std::vector<std::shared_ptr<db::DataEntryBase>> const& entry) override;
 };
 
 class PrimaryExpressionNode : public ExpressionBaseNode {
@@ -325,7 +325,7 @@ public:
 
     void evaluate(Evaluator& context) override;
 
-    bool evaluateExpression(std::vector<std::shared_ptr<DataEntryBase>> const& entry) override;
+    bool evaluateExpression(std::vector<std::shared_ptr<db::DataEntryBase>> const& entry) override;
 };
 
 

@@ -16,35 +16,35 @@ class AST;
 class Evaluator {
 private:
     AST &ast;
-    Database &database;
-    std::shared_ptr<EvaluationTable> evaluationTable;
+    db::Database &database;
+    std::shared_ptr<db::EvaluationTable> evaluationTable;
 
 public:
-    Evaluator(AST &ast, Database &database);
+    Evaluator(AST &ast, db::Database &database);
 
     /**
      * Returns the database
      * @return Database
      */
-    Database& getDatabase() const;
+    db::Database& getDatabase() const;
 
     /**
      * Evaluates the AST
      * @return Evaluation table
      */
-    EvaluationTable evaluate();
+    db::EvaluationTable evaluate();
 
     /**
      * Get the evaluation table
      * @return Evaluation table
      */
-    std::shared_ptr<EvaluationTable> getEvaluationTable() const;
+    std::shared_ptr<db::EvaluationTable> getEvaluationTable() const;
 
     /**
      * Set the evaluation table
      * @param evaluationTable Evaluation table
      */
-    void setEvaluationTable(std::shared_ptr<EvaluationTable> evaluationTable);
+    void setEvaluationTable(std::shared_ptr<db::EvaluationTable> evaluationTable);
 };
 
 } // namespace sql::ast

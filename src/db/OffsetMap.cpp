@@ -4,6 +4,8 @@
 
 #include "OffsetMap.h"
 
+using namespace db;
+
 OffsetMap::OffsetMap(StorageService &storageService, std::string database, std::string name) : storageService(storageService), database(std::move(database)), name(std::move(name)) {}
 
 size_t OffsetMap::getOffset(std::string key) const {

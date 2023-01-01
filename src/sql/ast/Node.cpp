@@ -103,6 +103,10 @@ void SelectStatment::evaluate(Evaluator &evaluator) {
         }
     }
 
+    if (join) {
+        join->evaluate(evaluator);
+    }
+
     // TODO: Evaluate WHERE clause
 
     // TODO: Project columns, maybe in the JSON output
@@ -147,7 +151,85 @@ void JoinStatement::accept(Visitor &visitor) {
 }
 
 void JoinStatement::evaluate(Evaluator &evaluator) {
-    std::ignore = evaluator;
+    // TODO: Check if key is in left or right of the expression
+    std::unordered_map<std::string, std::vector<std::shared_ptr<DataEntryBase>>> items = evaluator.getDatabase().getTable(std::string(this->getTable().name)).get()->getItems(this->getRight().name);
+
+    std::vector<std::vector<std::shared_ptr<DataEntryBase>>> newItems;
+
+    // TODO: Check if key exists in table
+
+    size_t key_index = 0;
+    for (auto &column : evaluator.getEvaluationTable().get()->getColumns()) {
+        if (column.name == this->getLeft().name) {
+            break;
+        }
+        key_index++;
+    }
+
+    switch (type) {
+        case JoinType::LEFT:
+            for (auto &item : evaluator.getEvaluationTable().get()->getItems()) {
+                std::vector<std::shared_ptr<DataEntryBase>> newItem;
+
+                // Check if key exists in map
+                bool found = items.count(item[key_index].get()->toString()) > 0;
+
+                if (found) {
+                    newItem.insert(newItem.end(), item.begin(), item.end());
+                    newItem.insert(newItem.end(), items[item[key_index].get()->toString()].begin(), items[item[key_index].get()->toString()].end());
+                } else {
+                    newItem.insert(newItem.end(), item.begin(), item.end());
+                    for (auto &column : evaluator.getDatabase().getTable(std::string(this->getTable().name)).get()->getColumns()) {
+                        newItem.emplace_back(std::make_shared<DataEntryNull>());
+                    }
+                }
+
+                newItems.emplace_back(newItem);
+            }
+            break;
+        case JoinType::RIGHT:
+            for (auto &item : evaluator.getEvaluationTable().get()->getItems()) {
+                std::vector<std::shared_ptr<DataEntryBase>> newItem;
+
+                // Check if key exists in map
+                bool found = items.count(item[key_index].get()->toString()) > 0;
+
+                if (found) {
+                    newItem.insert(newItem.end(), items[item[key_index].get()->toString()].begin(), items[item[key_index].get()->toString()].end());
+                    newItem.insert(newItem.end(), item.begin(), item.end());
+                } else {
+                    for (auto &column : evaluator.getDatabase().getTable(std::string(this->getTable().name)).get()->getColumns()) {
+                        newItem.emplace_back(std::make_shared<DataEntryNull>());
+                    }
+                    newItem.insert(newItem.end(), item.begin(), item.end());
+                }
+
+                newItems.emplace_back(newItem);
+            }
+            break;
+        case JoinType::INNER:
+            for (auto &item : evaluator.getEvaluationTable().get()->getItems()) {
+                std::vector<std::shared_ptr<DataEntryBase>> newItem;
+
+                // Check if key exists in map
+                bool found = items.count(item[key_index].get()->toString()) > 0;
+
+                if (found) {
+                    newItem.insert(newItem.end(), item.begin(), item.end());
+                    newItem.insert(newItem.end(), items[item[key_index].get()->toString()].begin(), items[item[key_index].get()->toString()].end());
+                }
+
+                newItems.emplace_back(newItem);
+            }
+            break;
+        case JoinType::FULL:
+            // TODO: Implement
+            break;
+        default:
+            break;
+    }
+
+    evaluator.getEvaluationTable().get()->setItems(newItems);
 }
 
 ExpressionBaseNode::ExpressionBaseNode(ASTNodeType type, Position position, Repository &repository) : Node(type, position, repository) {}

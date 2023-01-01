@@ -5,6 +5,7 @@
 #include "Database.h"
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
+using namespace db;
 
 Database::Database(std::string name, StorageService& storageService): name(std::move(name)), storageService(storageService) {
     if(!storageService.exists(this->name + "/config.json")) {

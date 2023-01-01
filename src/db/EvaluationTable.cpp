@@ -4,6 +4,8 @@
 
 #include "EvaluationTable.h"
 
+using namespace db;
+
 EvaluationTable::EvaluationTable() = default;
 
 EvaluationTable::EvaluationTable(std::vector<Column> columns, std::vector<std::vector<std::shared_ptr<DataEntryBase>>> items) : columns(std::move(columns)), items(std::move(items)) {}
@@ -44,6 +46,9 @@ void EvaluationTable::print(std::ostream &out) {
                     break;
                 case DataType::VARCHAR:
                     std::cout << static_cast<DataEntry<std::string>*>(item[i].get())->getValue() << " ";
+                    break;
+                case DataType::SQL_NULL:
+                    std::cout << "NULL ";
                     break;
             }
         }
