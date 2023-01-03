@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <string>
 #include <iostream>
+#include <stdexcept>
 
 namespace db {
 
@@ -33,6 +34,12 @@ public:
      * @return String representation of the data type
      */
     virtual std::string toString() const = 0;
+
+    /**
+     * Compares the value of the data type
+     * @param other The data other
+    */
+    virtual int compare(const DataEntry &other) const = 0;
 };
 
 class DataEntryNull: public DataEntry {
@@ -64,6 +71,20 @@ public:
      * @return String representation of the data type
      */
     std::string toString() const override;
+
+    /**
+     * Overloads the <=> operator to compare the value of the data type
+     * @param entry The data entry
+     * @return The comparison result
+    */
+    // TODO: Does not work :(
+    //auto operator<=>(const DataEntry& entry) const;
+
+    /**
+     * Compares the value of the data type
+     * @param other The data other
+    */
+    int compare(const DataEntry &other) const override;
 };
 
 
@@ -101,12 +122,27 @@ public:
 
     /**
      * Overloads the << operator to print the value of the data type
-     * @tparam T The type of the value
+     * @param os The output stream
+     * @param entry The data entry
     */
     friend std::ostream& operator<<(std::ostream& os, const DataEntryInteger& entry) {
         os << entry.getValue();
         return os;
     }
+
+    /**
+     * Overloads the <=> operator to compare the value of the data type
+     * @param entry The data entry
+     * @return The comparison result
+    */
+    // TODO: Does not work :(
+    //auto operator<=>(const DataEntry& entry) const;
+
+    /**
+     * Compares the value of the data type
+     * @param other The data other
+    */
+    int compare(const DataEntry &other) const override;
 };
 
 class DataEntryVarchar: public DataEntry {
@@ -149,6 +185,20 @@ public:
         os << entry.getValue();
         return os;
     }
+
+    /**
+     * Overloads the <=> operator to compare the value of the data type
+     * @param entry The data entry
+     * @return The comparison result
+    */
+    // TODO: Does not work :(
+    //auto operator<=>(const DataEntry& entry) const;
+
+    /**
+     * Compares the value of the data type
+     * @param other The data other
+    */
+    int compare(const DataEntry &other) const override;
 };
 
 } // namespace db

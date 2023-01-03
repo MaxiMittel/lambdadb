@@ -107,7 +107,18 @@ void SelectStatment::evaluate(Evaluator &evaluator) {
         join->evaluate(evaluator);
     }
 
-    // TODO: Evaluate WHERE clause
+    if (where) {
+        std::vector<std::vector<std::shared_ptr<db::DataEntry>>> newItems;
+
+        for (auto &item : evaluator.getEvaluationTable().get()->getItems()) {
+            bool res = static_cast<ExpressionNode*>(where.get())->evaluateExpression(evaluator, item);
+            if (res) {
+                newItems.emplace_back(item);
+            }
+        }
+
+        evaluator.getEvaluationTable().get()->setItems(newItems);
+    }
 
     // TODO: Project columns, maybe in the JSON output
 }
@@ -252,9 +263,10 @@ void ExpressionNode::evaluate(Evaluator &evaluator) {
     and_expr->evaluate(evaluator);
 }
 
-bool ExpressionNode::evaluateExpression(std::vector<std::shared_ptr<db::DataEntry>> const& entry) {
+bool ExpressionNode::evaluateExpression(Evaluator &evaluator,  std::vector<std::shared_ptr<db::DataEntry>> const& entry) {
     std::ignore = entry;
-    return true;
+    std::ignore = evaluator;
+    return and_expr->evaluateExpression(evaluator, entry);
 }
 
 AndExpressionNode::AndExpressionNode(Position position, Repository &repository) : ExpressionBaseNode(ASTNodeType::AND_EXPRESSION, position, repository) {}
@@ -279,11 +291,16 @@ void AndExpressionNode::accept(Visitor &visitor) {
     visitor.visit(*this);
 }
 
-bool AndExpressionNode::evaluateExpression(std::vector<std::shared_ptr<db::DataEntry>> const& entry) {
-    bool or_result = or_expr->evaluateExpression(entry);
+bool AndExpressionNode::evaluateExpression(Evaluator &evaluator,  std::vector<std::shared_ptr<db::DataEntry>> const& entry) {
+    bool or_result = or_expr->evaluateExpression(evaluator, entry);
     if (!or_result) return false;
 
-    return and_expr == nullptr || and_expr->evaluateExpression(entry);
+    if (and_expr != nullptr) {
+        bool and_result = and_expr->evaluateExpression(evaluator, entry);
+        return and_result;
+    }
+
+    return true;
 }
 
 void AndExpressionNode::evaluate(Evaluator &evaluator) {
@@ -312,11 +329,16 @@ void OrExpressionNode::accept(Visitor &visitor) {
     visitor.visit(*this);
 }
 
-bool OrExpressionNode::evaluateExpression(std::vector<std::shared_ptr<db::DataEntry>> const& entry) {
-    bool bool_result = bool_expr->evaluateExpression(entry);
+bool OrExpressionNode::evaluateExpression(Evaluator &evaluator,  std::vector<std::shared_ptr<db::DataEntry>> const& entry) {
+    bool bool_result = bool_expr->evaluateExpression(evaluator, entry);
     if (bool_result) return true;
 
-    return or_expr == nullptr || or_expr->evaluateExpression(entry);
+    if (or_expr != nullptr) {
+        bool or_result = or_expr->evaluateExpression(evaluator, entry);
+        return or_result;
+    }
+
+    return false;
 }
 
 void OrExpressionNode::evaluate(Evaluator &evaluator) {
@@ -353,24 +375,26 @@ void BoolExpressionNode::accept(Visitor &visitor) {
     visitor.visit(*this);
 }
 
-bool BoolExpressionNode::evaluateExpression(std::vector<std::shared_ptr<db::DataEntry>> const& entry) {
-    bool left_result = left->evaluateExpression(entry);
-    bool right_result = right->evaluateExpression(entry);
+bool BoolExpressionNode::evaluateExpression(Evaluator &evaluator,  std::vector<std::shared_ptr<db::DataEntry>> const& entry) {
+    std::ignore = entry;
+    PrimaryExpressionNode* left_primary = static_cast<PrimaryExpressionNode*>(left.get());
+    PrimaryExpressionNode* right_primary = static_cast<PrimaryExpressionNode*>(right.get());
 
-    // TODO: Return type not bool
+    int result = left_primary->getData(evaluator, entry)->compare(*right_primary->getData(evaluator, entry).get());
+
     switch (op) {
         case sql::ast::BoolOperator::EQUAL:
-            return left_result == right_result;
+            return result == 0;
         case sql::ast::BoolOperator::NOT_EQUAL:
-            return left_result != right_result;
+            return result != 0;
         case sql::ast::BoolOperator::LESS:
-            return left_result < right_result;
+            return result < 0;
         case sql::ast::BoolOperator::LESS_EQUAL:
-            return left_result <= right_result;
+            return result <= 0;
         case sql::ast::BoolOperator::GREATER:
-            return left_result > right_result;
+            return result > 0;
         case sql::ast::BoolOperator::GREATER_EQUAL:
-            return left_result >= right_result;
+            return result >= 0;
         default:
             return false;
     }
@@ -402,8 +426,8 @@ void UnaryExpressionNode::accept(Visitor &visitor) {
     visitor.visit(*this);
 }
 
-bool UnaryExpressionNode::evaluateExpression(std::vector<std::shared_ptr<db::DataEntry>> const& entry) {
-    bool primary_result = primary_expr->evaluateExpression(entry);
+bool UnaryExpressionNode::evaluateExpression(Evaluator &evaluator,  std::vector<std::shared_ptr<db::DataEntry>> const& entry) {
+    bool primary_result = primary_expr->evaluateExpression(evaluator, entry);
 
     switch (op) {
         case sql::ast::UnaryOperator::NOT:
@@ -419,12 +443,53 @@ void UnaryExpressionNode::evaluate(Evaluator &evaluator) {
 
 PrimaryExpressionNode::PrimaryExpressionNode(Position position, Repository &repository) : ExpressionBaseNode(ASTNodeType::PRIMARY_EXPRESSION, position, repository) {}
 
+void PrimaryExpressionNode::setColumn(std::string table, std::string column) {
+    this->table = table;
+    this->column = column;
+}
+
+std::string PrimaryExpressionNode::getTable() const {
+    return table;
+}
+
+std::string PrimaryExpressionNode::getColumn() const {
+    return column;
+}
+
+void PrimaryExpressionNode::setData(std::shared_ptr<db::DataEntry> data) {
+    this->data = data;
+}
+
+std::shared_ptr<db::DataEntry> PrimaryExpressionNode::getData(Evaluator &evaluator, std::vector<std::shared_ptr<db::DataEntry>> const& entry) const {
+    if (data != nullptr) return data;
+    if (column != "") {
+        if (table != "") {
+            for (size_t i = 0; i < evaluator.getEvaluationTable().get()->getColumns().size(); i++) {
+                auto column_ref = evaluator.getEvaluationTable().get()->getColumns()[i];
+                if (column_ref.name == column && column_ref.table == table) {
+                    return entry[i];
+                }
+            }
+        }
+
+        for (size_t i = 0; i < evaluator.getEvaluationTable().get()->getColumns().size(); i++) {
+            auto column_ref = evaluator.getEvaluationTable().get()->getColumns()[i];
+            if (column_ref.name == column) {
+                return entry[i];
+            }
+        }
+    }
+    
+    return std::make_shared<db::DataEntryNull>();
+}
+
 void PrimaryExpressionNode::accept(Visitor &visitor) {
     visitor.visit(*this);
 }
 
-bool PrimaryExpressionNode::evaluateExpression(std::vector<std::shared_ptr<db::DataEntry>> const& entry) {
+bool PrimaryExpressionNode::evaluateExpression(Evaluator &evaluator,  std::vector<std::shared_ptr<db::DataEntry>> const& entry) {
     std::ignore = entry;
+    std::ignore = evaluator;
     return false;
 }
 

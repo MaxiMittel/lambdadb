@@ -40,17 +40,7 @@ void EvaluationTable::print(std::ostream &out) {
     // Print the items
     for (const auto &item : items) {
         for (size_t i = 0; i < columns.size(); i++) {
-            switch (columns[i].type) {
-                case DataType::INTEGER:
-                    std::cout << static_cast<DataEntryInteger*>(item[i].get())->getValue() << " ";
-                    break;
-                case DataType::VARCHAR:
-                    std::cout << static_cast<DataEntryVarchar*>(item[i].get())->getValue() << " ";
-                    break;
-                case DataType::SQL_NULL:
-                    std::cout << "NULL ";
-                    break;
-            }
+            out << item[i]->toString() << " ";
         }
         out << std::endl;
     }

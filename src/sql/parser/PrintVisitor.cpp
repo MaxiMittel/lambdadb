@@ -641,14 +641,19 @@ void PrintVisitor::visit(const NodePrimaryExpression& node) {
         node.ident2->accept(*this);
     }
 
-    if (node.identifier != nullptr) {
+    if (node.integer_literal != nullptr) {
         out << "N" << current_node << " -> ";
-        node.identifier->accept(*this);
+        node.integer_literal->accept(*this);
     }
 
-    if (node.literal_value != nullptr) {
+    if (node.float_literal != nullptr) {
         out << "N" << current_node << " -> ";
-        node.literal_value->accept(*this);
+        node.float_literal->accept(*this);
+    }
+
+    if (node.string_literal != nullptr) {
+        out << "N" << current_node << " -> ";
+        node.string_literal->accept(*this);
     }
 
     if (node._rparen != nullptr) {

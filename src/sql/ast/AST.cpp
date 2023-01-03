@@ -124,10 +124,10 @@ std::shared_ptr<Node> AST::analyzeStatement(parser::NodeSelectStmt* node) {
         } else if (left->ident1 != nullptr) {
             parser::NodeIdentifier* ident = static_cast<parser::NodeIdentifier*>(left->ident1.get());
             joinStatement->setLeft(ColumnRef{false, "", std::string(ident->value), ""});
-        } else if (left->literal_value != nullptr) {
-            // TODO: Support literal values
-            //joinStatement->setLeftColumn(ColumnRef{false, "", std::string(left->literal_value->value), ""});
         }
+        // TODO: Support literal values
+        //joinStatement->setLeftColumn(ColumnRef{false, "", std::string(left->literal_value->value), ""});
+        
 
         if (right->ident1 != nullptr && right->ident2 != nullptr) {
             parser::NodeIdentifier* ident1 = static_cast<parser::NodeIdentifier*>(right->ident1.get());
@@ -136,10 +136,9 @@ std::shared_ptr<Node> AST::analyzeStatement(parser::NodeSelectStmt* node) {
         } else if (right->ident1 != nullptr) {
             parser::NodeIdentifier* ident = static_cast<parser::NodeIdentifier*>(right->ident1.get());
             joinStatement->setRight(ColumnRef{false, "", std::string(ident->value), ""});
-        } else if (right->literal_value != nullptr) {
-            // TODO: Support literal values
-            //joinStatement->setRightColumn(ColumnRef{false, "", std::string(right->literal_value->value), ""});
-        }
+        } 
+        // TODO: Support literal values
+        //joinStatement->setRightColumn(ColumnRef{false, "", std::string(right->literal_value->value), ""});
 
         selectStatement->setJoin(joinStatement);
     }
@@ -256,7 +255,26 @@ std::shared_ptr<ExpressionBaseNode> AST::analyzeStatement(parser::NodeUnaryExpre
 std::shared_ptr<ExpressionBaseNode> AST::analyzeStatement(parser::NodePrimaryExpression* node) {
     std::shared_ptr<PrimaryExpressionNode> primaryExpressionNode = std::make_shared<PrimaryExpressionNode>(node->getPosition(), repository);
 
-    // TODO: Support all primary expressions
+    if (node->integer_literal != nullptr) {
+        parser::NodeIntegerLiteral* integerLiteral = static_cast<parser::NodeIntegerLiteral*>(node->integer_literal.get());
+        primaryExpressionNode->setData(std::make_shared<db::DataEntryInteger>(std::stoi(std::string(integerLiteral->value))));
+    }
+
+    if (node->string_literal != nullptr) {
+        parser::NodeStringLiteral* stringLiteral = static_cast<parser::NodeStringLiteral*>(node->string_literal.get());
+        primaryExpressionNode->setData(std::make_shared<db::DataEntryVarchar>(std::string(stringLiteral->value)));
+    }
+
+    if (node->ident2 != nullptr && node->ident1 != nullptr) {
+        parser::NodeIdentifier* ident1 = static_cast<parser::NodeIdentifier*>(node->ident1.get());
+        parser::NodeIdentifier* ident2 = static_cast<parser::NodeIdentifier*>(node->ident2.get());
+        primaryExpressionNode->setColumn(std::string(ident1->value), std::string(ident2->value));
+    }
+
+    if (node->ident1 != nullptr) {
+        parser::NodeIdentifier* ident1 = static_cast<parser::NodeIdentifier*>(node->ident1.get());
+        primaryExpressionNode->setColumn("", std::string(ident1->value));
+    }
 
     return primaryExpressionNode;
 }

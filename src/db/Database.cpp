@@ -29,6 +29,7 @@ Database::Database(std::string name, StorageService& storageService): name(std::
         std::vector<Column> columns;
         for (auto column: table["columns"]) {
             columns.emplace_back(Column{
+                    table["name"],
                     column["name"],
                     getDataType(column["type"]),
                     column["size"],

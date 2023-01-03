@@ -410,9 +410,16 @@ std::shared_ptr<Node> Parser::parse_primary_expr() {
 
     switch (token.type) {
         case TokenType::INTEGER_LITERAL:
+            lexer.next();
+            primary_expr->integer_literal = std::make_shared<NodeIntegerLiteral>(token.position, token.value);
+            break;
         case TokenType::FLOAT_LITERAL:
+            lexer.next();
+            primary_expr->float_literal = std::make_shared<NodeFloatLiteral>(token.position, token.value);
+            break;
         case TokenType::STRING_LITERAL:
-            primary_expr->literal_value = parse_literal();
+            lexer.next();
+            primary_expr->string_literal = std::make_shared<NodeStringLiteral>(token.position, token.value);
             break;
         case TokenType::IDENTIFIER:
             lexer.next();

@@ -424,8 +424,9 @@ class NodePrimaryExpression: public Node {
     std::shared_ptr<Node> _dot = nullptr;
     std::shared_ptr<Node> ident2 = nullptr;
 
-    std::shared_ptr<Node> literal_value = nullptr;
-    std::shared_ptr<Node> identifier = nullptr;
+    std::shared_ptr<Node> integer_literal = nullptr;
+    std::shared_ptr<Node> float_literal = nullptr;
+    std::shared_ptr<Node> string_literal = nullptr;
 
     void accept(Visitor& visitor) override;
 };

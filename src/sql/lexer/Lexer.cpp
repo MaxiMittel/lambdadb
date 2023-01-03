@@ -143,23 +143,21 @@ Token Lexer::next() {
                 {position - 1, position},
                 repository.get({position - 1, position}));
         case '\'': {
-            size_t start = position - 1;
-            size_t length = 1;
+            size_t start = position;
+            size_t length = 0;
             while (peek() != '\'') {
                 get();
                 length++;
             }
             get();
-            length++;
-            std::cout << "Found string literal: " << repository.get({start, start + length}) << std::endl;
             return Token(
                 TokenType::STRING_LITERAL,
                 {start, start + length},
                 repository.get({start, start + length}));
         }
         case '"': {
-            size_t start = position - 1;
-            size_t length = 1;
+            size_t start = position;
+            size_t length = 0;
             bool escape = false;
             while (peek() != '"' || escape) {
                 if (escape) {
@@ -171,7 +169,6 @@ Token Lexer::next() {
                 length++;
             }
             get();
-            length++;
             return Token(
                 TokenType::STRING_LITERAL,
                 {start, start + length},
@@ -215,8 +212,9 @@ Token Lexer::next() {
 }
 
 Token Lexer::peek_next() {
+    size_t old_position = position;
     Token token = next();
-    position = token.position.start;
+    position = old_position;
     return token;
 }
 

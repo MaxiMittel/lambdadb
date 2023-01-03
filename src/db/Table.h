@@ -14,6 +14,7 @@
 namespace db {
 
 struct Column {
+    std::string table;
     std::string name;
     DataType type;
     size_t size;

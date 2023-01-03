@@ -23,6 +23,23 @@ std::string DataEntryNull::toString() const {
     return "NULL";
 }
 
+/*auto DataEntryNull::operator<=>(const DataEntry &other) const {
+    std::cout << "Comparing NULL and " << other.toString() << std::endl;
+    if (other.getType() == DataType::SQL_NULL) {
+        return 0 <=> 0;
+    } else {
+        return 1 <=> 0;
+    }
+}*/
+
+int DataEntryNull::compare(const DataEntry &other) const {
+    if (other.getType() == DataType::SQL_NULL) {
+        return 0;
+    } else {
+        return 1;
+    }
+}
+
 DataEntryInteger::DataEntryInteger(int32_t data) : data(data) {}
 
 DataType DataEntryInteger::getType() const {
@@ -41,6 +58,24 @@ std::string DataEntryInteger::toString() const {
     return std::to_string(data);
 }
 
+/*auto DataEntryInteger::operator<=>(const DataEntry &other) const {
+    std::cout << "Comparing " << data << " and " << other.toString() << std::endl;
+    if (other.getType() == DataType::INTEGER) {
+        std::cout << "Comparing " << data << " and " << static_cast<const DataEntryInteger &>(other).data << std::endl;
+        return data <=> static_cast<const DataEntryInteger &>(other).data;
+    } else {
+        return 1 <=> 0;
+    }
+}*/
+
+int DataEntryInteger::compare(const DataEntry &other) const {
+    if (other.getType() == DataType::INTEGER) {
+        return data - static_cast<const DataEntryInteger &>(other).data;
+    } else {
+        return 1;
+    }
+}
+
 DataEntryVarchar::DataEntryVarchar(std::string data) : data(std::move(data)) {}
 
 DataType DataEntryVarchar::getType() const {
@@ -57,4 +92,21 @@ void DataEntryVarchar::setValue(const std::string &data) {
 
 std::string DataEntryVarchar::toString() const {
     return data;
+}
+
+/*auto DataEntryVarchar::operator<=>(const DataEntry &other) const {
+    std::cout << "Comparing " << data << " and " << other.toString() << std::endl;
+    if (other.getType() == DataType::VARCHAR) {
+        return data <=> static_cast<const DataEntryVarchar &>(other).data;
+    } else {
+        return 1 <=> 0;
+    }
+}*/
+
+int DataEntryVarchar::compare(const DataEntry &other) const {
+    if (other.getType() == DataType::VARCHAR) {
+        return data.compare(other.toString()) > 0; // TODO: Check
+    } else {
+        return 1;
+    }
 }
