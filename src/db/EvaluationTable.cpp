@@ -3,7 +3,9 @@
 //
 
 #include "EvaluationTable.h"
+#include <nlohmann/json.hpp>
 
+using json = nlohmann::json;
 using namespace db;
 
 EvaluationTable::EvaluationTable() = default;
@@ -44,4 +46,18 @@ void EvaluationTable::print(std::ostream &out) {
         }
         out << std::endl;
     }
+}
+
+std::string EvaluationTable::toJSON() const {
+    json j;
+
+    for (const auto &item : items) {
+        json itemJson;
+        for (size_t i = 0; i < columns.size(); i++) {
+            itemJson[columns[i].name] = item[i]->toString();
+        }
+        j.push_back(itemJson);
+    }
+
+    return j.dump();
 }

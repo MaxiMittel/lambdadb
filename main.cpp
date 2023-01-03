@@ -4,101 +4,67 @@
 #include "src/net/Server.h"
 #include "src/storage/StorageService.h"
 #include "src/db/Table.h"
-// #include <nlohmann/json.hpp>
-// using json = nlohmann::json;
+#include <nlohmann/json.hpp>
 #include "src/sql/lexer/Lexer.h"
 #include "src/sql/code/Repository.h"
 #include "src/sql/parser/Parser.h"
 #include "src/sql/ast/AST.h"
 #include "src/sql/ast/Evaluator.h"
 
+using json = nlohmann::json;
+
+enum MessageAction {
+    QUERY,
+};
+
 int main()
 {
-    /*Server server(4000, "0.0.0.0");
-    server.bind();
-
-    while (true) {
-        int client_socket = server.accept();
-        std::string message = server.receive(client_socket);
-        std::cout << "Received: " << message << std::endl;
-        json j = json::parse(message);
-        std::cout << j["name"] << ": " << j["age"] << std::endl;
-        server.send(client_socket, "Hello from server");
-        server.close(client_socket);
-    }
-    return 0;*/
-
-    /*Aws::SDKOptions options;
-    options.loggingOptions.logLevel = Aws::Utils::Logging::LogLevel::Info;
-    Aws::InitAPI(options);
-    {
-
-    std::string database = "cpp_test";
-
-    StorageService storageService("serverless-db-9umfiaj");
-
-    std::vector<Column> user_columns;
-
-    user_columns.emplace_back(Column{"id", DataType::VARCHAR, 36, true});
-    user_columns.emplace_back(Column{"name", DataType::VARCHAR, 255, false});
-    user_columns.emplace_back(Column{"age", DataType::INTEGER, 4, false});
-
-    Table table("user", database, user_columns, storageService);*/
-
-    /*std::vector<std::shared_ptr<DataEntry>> user1;
-    user1.emplace_back(std::make_shared<DataEntryVarchar>("1", DataType::VARCHAR));
-    user1.emplace_back(std::make_shared<DataEntryVarchar>("John", DataType::VARCHAR));
-    user1.emplace_back(std::make_shared<DataEntryInteger>(20, DataType::INTEGER));
-
-    std::vector<std::shared_ptr<DataEntry>> user2;
-    user2.emplace_back(std::make_shared<DataEntryVarchar>("2", DataType::VARCHAR));
-    user2.emplace_back(std::make_shared<DataEntryVarchar>("Jane", DataType::VARCHAR));
-    user2.emplace_back(std::make_shared<DataEntryInteger>(21, DataType::INTEGER));
-
-    table.insertItem(user1);
-    table.insertItem(user2);*/
-
-    /*table.getItems();
-
-    } // The SDK must be shutdown before the application terminates.
-    Aws::ShutdownAPI(options);*/
-
     Aws::SDKOptions options;
     options.loggingOptions.logLevel = Aws::Utils::Logging::LogLevel::Info;
     Aws::InitAPI(options);
     {
+        Server server(4000, "0.0.0.0");
+        server.bind();
 
-        //Repository repo("INSERT INTO user (id, name, age) VALUES ('3',  'Philipp', 25);");
-        //Repository repo("UPDATE user SET age = 25, name = 'Maxi' WHERE id = '1' AND 5 < 6;");
-        Repository repo("SELECT * FROM user;");
-        sql::lexer::Lexer lexer(repo);
+        while (true) {
+            int client_socket = server.accept();
+            std::string message = server.receive(client_socket);
+            json j = json::parse(message);
 
-        /*while (lexer.has_next_token()) {
-            Token token = lexer.next();
-            std::cout << token << std::endl;
-        }*/
+            MessageAction action = j["action"];
 
-        sql::parser::Parser parser(lexer, repo);
-        parser.parse();
+            switch (action) {
+                case QUERY: {
+                    std::string database = j["database"];
+                    std::string query = j["query"];
 
-        parser.print(std::cout);
+                    Repository repo(query);
+                    sql::lexer::Lexer lexer(repo);
 
-        sql::ast::AST ast(parser, repo);
-        ast.analyze();
 
-        ast.print(std::cout);
+                    sql::parser::Parser parser(lexer, repo);
+                    parser.parse();
 
-        std::string database = "cpp_test";
-        StorageService storageService("serverless-db-9umfiaj");
-        db::Database db(database, storageService);
+                    sql::ast::AST ast(parser, repo);
+                    ast.analyze();
 
-        sql::ast::Evaluator evalutor(ast, db);
+                    StorageService storageService("serverless-db-9umfiaj");
+                    db::Database db(database, storageService);
 
-        db::EvaluationTable result = evalutor.evaluate();
+                    sql::ast::Evaluator evalutor(ast, db);
 
-        result.print(std::cout);
+                    db::EvaluationTable result = evalutor.evaluate();
+
+                    server.send(client_socket, result.toJSON() + '\n');
+                    break;
+                }
+                default:
+                    break;
+            }
+            server.close(client_socket);
+        }
+        return 0;
+
     } // The SDK must be shutdown before the application terminates.
     Aws::ShutdownAPI(options);
-
-    return 0;
 }

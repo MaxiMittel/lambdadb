@@ -62,6 +62,12 @@ class EvaluationTable {
      * @param out Output stream
      */
     void print(std::ostream& out);
+
+    /**
+     * Returns the table as JSON
+     * @return Table as JSON
+     */
+    [[nodiscard]] std::string toJSON() const;
 };
 
 } // namespace db

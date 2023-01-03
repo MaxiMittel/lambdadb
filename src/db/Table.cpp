@@ -64,9 +64,12 @@ std::vector<std::vector<std::shared_ptr<DataEntry>>> Table::getItems() const {
                 case DataType::INTEGER:
                     item.emplace_back(std::make_shared<DataEntryInteger>(*(int32_t*)(content.data + offset)));
                     break;
-                case DataType::VARCHAR:
-                    item.emplace_back(std::make_shared<DataEntryVarchar>(std::string(reinterpret_cast<char*>(content.data + offset), columns[column_index].size)));
+                case DataType::VARCHAR: {
+                    std::string value = std::string(reinterpret_cast<char*>(content.data + offset), columns[column_index].size);
+                    value.erase(std::find(value.begin(), value.end(), '\0'), value.end());
+                    item.emplace_back(std::make_shared<DataEntryVarchar>(value));
                     break;
+                }
                 case DataType::SQL_NULL:
                     item.emplace_back(std::make_shared<DataEntryNull>());
                     break;  
@@ -102,9 +105,12 @@ std::unordered_map<std::string, std::vector<std::shared_ptr<DataEntry>>> Table::
                 case DataType::INTEGER:
                     item.emplace_back(std::make_shared<DataEntryInteger>(*(int32_t*)(content.data + offset)));
                     break;
-                case DataType::VARCHAR:
-                    item.emplace_back(std::make_shared<DataEntryVarchar>(std::string(reinterpret_cast<char*>(content.data + offset), columns[column_index].size)));
+                case DataType::VARCHAR: {
+                    std::string value = std::string(reinterpret_cast<char*>(content.data + offset), columns[column_index].size);
+                    value.erase(std::find(value.begin(), value.end(), '\0'), value.end());
+                    item.emplace_back(std::make_shared<DataEntryVarchar>(value));
                     break;
+                }
                 case DataType::SQL_NULL:
                     item.emplace_back(std::make_shared<DataEntryNull>());
                     break;
