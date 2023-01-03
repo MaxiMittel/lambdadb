@@ -32,7 +32,13 @@ void AST::print(std::ostream &out) {
 }
 
 std::shared_ptr<Node> AST::analyzeStatement(parser::NodeStmt* node) {
-    return analyzeStatement((parser::NodeSelectStmt*) node->select_stmt.get());
+    if (node->select_stmt != nullptr) {
+        return analyzeStatement((parser::NodeSelectStmt*) node->select_stmt.get());
+    } else if (node->insert_stmt != nullptr) {
+        return analyzeStatement((parser::NodeInsertStmt*) node->insert_stmt.get());
+    } else {
+        assert(false);
+    }
 }
 
 std::shared_ptr<Node> AST::analyzeStatement(parser::NodeSelectStmt* node) {
@@ -277,4 +283,47 @@ std::shared_ptr<ExpressionBaseNode> AST::analyzeStatement(parser::NodePrimaryExp
     }
 
     return primaryExpressionNode;
+}
+
+std::shared_ptr<Node> AST::analyzeStatement(parser::NodeInsertStmt* node) {
+    std::shared_ptr<InsertStatement> insertStatement = std::make_shared<InsertStatement>(node->getPosition(), repository);
+    parser::NodeIdentifier* table_name = static_cast<parser::NodeIdentifier*>(node->table_name.get());
+
+    insertStatement->setTable(std::string(table_name->value));
+
+    if (node->column_list != nullptr) {
+        std::vector<std::string> columns;
+        parser::NodeColumnList* columnList = static_cast<parser::NodeColumnList*>(node->column_list.get());
+
+        for (auto column_list_item : columnList->column_list) {
+            if (column_list_item.get()->getType() == parser::NodeType::IDENTIFIER) {
+                parser::NodeIdentifier* column = static_cast<parser::NodeIdentifier*>(column_list_item.get());
+                columns.push_back(std::string(column->value));
+            }
+        }
+
+        insertStatement->setColumns(columns);
+    }
+
+    if (node->values != nullptr) {
+        std::vector<std::shared_ptr<db::DataEntry>> values;
+        parser::NodeValueList* valuesList = static_cast<parser::NodeValueList*>(node->values.get());
+
+        for (auto value_list_item : valuesList->value_list) {
+            if (value_list_item.get()->getType() == parser::NodeType::INTEGER_LITERAL) {
+                parser::NodeIntegerLiteral* value = static_cast<parser::NodeIntegerLiteral*>(value_list_item.get());
+                values.push_back(std::make_shared<db::DataEntryInteger>(std::stoi(std::string(value->value))));
+            }
+
+            if (value_list_item.get()->getType() == parser::NodeType::STRING_LITERAL) {
+                parser::NodeStringLiteral* value = static_cast<parser::NodeStringLiteral*>(value_list_item.get());
+                values.push_back(std::make_shared<db::DataEntryVarchar>(std::string(value->value)));
+            }
+        }
+
+        insertStatement->setValues(values);
+    }
+    
+
+    return insertStatement;
 }

@@ -20,6 +20,7 @@ class Visitor {
         virtual void visit(const BoolExpressionNode& node) = 0;
         virtual void visit(const UnaryExpressionNode& node) = 0;
         virtual void visit(const PrimaryExpressionNode& node) = 0;
+        virtual void visit(const InsertStatement& node) = 0;
 };
 
 } // namespace sql::ast

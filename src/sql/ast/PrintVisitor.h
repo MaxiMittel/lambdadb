@@ -29,6 +29,7 @@ namespace sql::ast
         virtual void visit(const BoolExpressionNode& node) override;
         virtual void visit(const UnaryExpressionNode& node) override;
         virtual void visit(const PrimaryExpressionNode& node) override;
+        virtual void visit(const InsertStatement& node) override;
     };
 
 }

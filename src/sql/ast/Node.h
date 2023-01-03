@@ -342,6 +342,32 @@ public:
     bool evaluateExpression(Evaluator& context, std::vector<std::shared_ptr<db::DataEntry>> const& entry) override;
 };
 
+class InsertStatement : public Node {
+private:
+    std::string table;
+    std::vector<std::string> columns;
+    std::vector<std::shared_ptr<db::DataEntry>> values;
+
+public:
+    InsertStatement(Position position, Repository &repository);
+
+    void setTable(std::string table);
+
+    std::string getTable() const;
+
+    void setColumns(std::vector<std::string> columns);
+
+    std::vector<std::string> getColumns() const;
+
+    void setValues(std::vector<std::shared_ptr<db::DataEntry>> values);
+
+    std::vector<std::shared_ptr<db::DataEntry>> getValues() const;
+
+    void accept(Visitor &visitor) override;
+
+    void evaluate(Evaluator& context) override;
+};
+
 
 } // namespace sql::ast
 

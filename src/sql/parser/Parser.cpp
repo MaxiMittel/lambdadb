@@ -606,17 +606,16 @@ std::shared_ptr<Node> Parser::parse_alter_stmt() {
 }
 
 std::shared_ptr<Node> Parser::parse_value_list() {
-    auto token = lexer.next();
+    auto token = lexer.peek_next();
     std::shared_ptr<NodeValueList> value_list = std::make_shared<NodeValueList>(token.position);
 
-    value_list->value_list.emplace_back(std::make_shared<NodeIdentifier>(token.position, token.value));
+    value_list->value_list.emplace_back(parse_literal());
 
     token = lexer.peek_next();
     while (token.type == TokenType::COMMA) {
         token = lexer.next();
         value_list->value_list.emplace_back(std::make_shared<NodeComma>(token.position));
-        token = lexer.next();
-        value_list->value_list.emplace_back(std::make_shared<NodeIdentifier>(token.position, token.value));
+        value_list->value_list.emplace_back(parse_literal());
         token = lexer.peek_next();
     }
 
@@ -624,7 +623,6 @@ std::shared_ptr<Node> Parser::parse_value_list() {
 }
 
 std::shared_ptr<Node> Parser::parse_column_list() {
-    std::cout << "parse_column_list" << std::endl;
     auto token = lexer.next();
     std::shared_ptr<NodeColumnList> column_list = std::make_shared<NodeColumnList>(token.position);
 

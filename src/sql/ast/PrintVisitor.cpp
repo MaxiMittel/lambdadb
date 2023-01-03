@@ -192,3 +192,29 @@ void PrintVisitor::visit(const PrimaryExpressionNode& node) {
     out << "N" << current_node << std::endl;
     out << "N" << current_node << "[label=\"Primary\"]" << std::endl;
 }
+
+void PrintVisitor::visit(const InsertStatement& node) {
+    int current_node = ++node_count;
+    out << "N" << current_node << std::endl;
+    out << "N" << current_node << "[label=\"Insert\"]" << std::endl;
+
+    // Print table
+    node_count++;
+    int table_node = node_count;
+    out << "N" << current_node << " -> N" << table_node << std::endl;
+    out << "N" << table_node << "[label=\"Table\"]" << std::endl;
+    node_count++;
+    out << "N" << node_count - 1 << " -> N" << node_count << std::endl;
+    out << "N" << node_count << "[label=\"" << node.getTable() << "\"]" << std::endl;
+
+    // Print values
+    node_count++;
+    int values_node = node_count;
+    out << "N" << current_node << " -> N" << values_node << std::endl;
+    out << "N" << values_node << "[label=\"Values\"]" << std::endl;
+    for (const auto& value : node.getValues()) {
+        node_count++;
+        out << "N" << node_count - 1 << " -> N" << node_count << std::endl;
+        out << "N" << node_count << "[label=\"" << value.get()->toString() << "\"]" << std::endl;
+    }
+}

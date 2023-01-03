@@ -497,3 +497,47 @@ void PrimaryExpressionNode::evaluate(Evaluator &evaluator) {
     std::ignore = evaluator;
 }
 
+InsertStatement::InsertStatement(Position position, Repository &repository) : Node(ASTNodeType::INSERT_STATEMENT, position, repository) {}
+
+void InsertStatement::setTable(std::string table) {
+    this->table = table;
+}
+
+std::string InsertStatement::getTable() const {
+    return table;
+}
+
+void InsertStatement::setColumns(std::vector<std::string> columns) {
+    this->columns = columns;
+}
+
+std::vector<std::string> InsertStatement::getColumns() const {
+    return columns;
+}
+
+void InsertStatement::setValues(std::vector<std::shared_ptr<db::DataEntry>> values) {
+    this->values = values;
+}
+
+std::vector<std::shared_ptr<db::DataEntry>> InsertStatement::getValues() const {
+    return values;
+}
+
+void InsertStatement::accept(Visitor &visitor) {
+    visitor.visit(*this);
+}
+
+void InsertStatement::evaluate(Evaluator &evaluator) {
+    std::vector<db::Column> table_columns = evaluator.getDatabase().getTable(table).get()->getColumns();
+
+    std::vector<std::shared_ptr<db::DataEntry>> data;
+    for (size_t i = 0; i < table_columns.size(); i++) {
+        for (size_t j = 0; j < columns.size(); j++) {
+            if (table_columns[i].name == columns[j]) {
+                data.push_back(values[j]);
+            }
+        }
+    }
+
+    evaluator.getDatabase().getTable(table).get()->insertItem(data);
+}

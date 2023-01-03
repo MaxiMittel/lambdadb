@@ -68,8 +68,9 @@ int main()
     Aws::InitAPI(options);
     {
 
-        Repository repo("SELECT * FROM user WHERE age = 20;");
+        //Repository repo("INSERT INTO user (id, name, age) VALUES ('3',  'Philipp', 25);");
         //Repository repo("UPDATE user SET age = 25, name = 'Maxi' WHERE id = '1' AND 5 < 6;");
+        Repository repo("SELECT * FROM user;");
         sql::lexer::Lexer lexer(repo);
 
         /*while (lexer.has_next_token()) {
@@ -80,12 +81,12 @@ int main()
         sql::parser::Parser parser(lexer, repo);
         parser.parse();
 
-        //parser.print(std::cout);
+        parser.print(std::cout);
 
         sql::ast::AST ast(parser, repo);
         ast.analyze();
 
-        //ast.print(std::cout);
+        ast.print(std::cout);
 
         std::string database = "cpp_test";
         StorageService storageService("serverless-db-9umfiaj");
