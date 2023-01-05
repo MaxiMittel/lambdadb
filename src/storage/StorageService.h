@@ -38,6 +38,13 @@ public:
     Buffer readObject(std::string key);
 
     /**
+     * Reads a file as a string
+     * @param key The name of the file
+     * @return The content of the file
+    */
+    std::string readObjectAsString(std::string key);
+
+    /**
      * Uploads a file to the storage
      * @param key The name of the file
      * @param content The content of the file

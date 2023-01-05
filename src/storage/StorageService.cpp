@@ -50,14 +50,34 @@ Buffer StorageService::readObject(std::string key) {
     if (get_object_outcome.IsSuccess()) {
         auto& retrieved_file = get_object_outcome.GetResultWithOwnership().GetBody();
 
-        std::stringstream buffer;
-        buffer << retrieved_file.rdbuf();
+        std::stringstream ss;
+        ss << retrieved_file.rdbuf();
 
-        auto content = buffer.str();
+        auto content = ss.str();
         auto data = new uint8_t[content.size()];
         memcpy(data, content.c_str(), content.size());
 
-        return Buffer{data, content.size()};
+        return Buffer{data, content.size()}; // TODO: reinterpret_cast<uint8_t*>(content.c_str())
+    } else {
+        throw std::runtime_error("Could not read object from S3");
+    }
+}
+
+std::string StorageService::readObjectAsString(std::string key) {
+    Aws::S3::S3Client s3_client;
+
+    Aws::S3::Model::GetObjectRequest object_request;
+    object_request.SetBucket(BUCKET_NAME);
+    object_request.SetKey(key);
+
+    auto get_object_outcome = s3_client.GetObject(object_request);
+
+    if (get_object_outcome.IsSuccess()) {
+        auto& retrieved_file = get_object_outcome.GetResultWithOwnership().GetBody();
+
+        std::stringstream buffer;
+        buffer << retrieved_file.rdbuf();
+        return buffer.str();
     } else {
         throw std::runtime_error("Could not read object from S3");
     }

@@ -17,13 +17,13 @@ Database::Database(std::string name, StorageService& storageService): name(std::
         storageService.writeObject(this->name + "/config.json", Buffer{(uint8_t*)empty_config.c_str(), empty_config.length()});
     }
 
-    auto content = storageService.readObject(this->name + "/config.json");
+    auto content = storageService.readObjectAsString(this->name + "/config.json");
 
-    if(content.size == 0) {
+    if(content.size() == 0) {
         return;
     }
 
-    auto data = json::parse(content.data);
+    auto data = json::parse(content);
 
     for (auto table: data["tables"]) {
         std::vector<Column> columns;
