@@ -4,7 +4,6 @@
 
 #include "Node.h"
 #include "Visitor.h"
-#include <ranges>
 
 using namespace sql::ast;
 
