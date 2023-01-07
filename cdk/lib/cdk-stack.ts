@@ -167,7 +167,6 @@ export class CdkStack extends cdk.Stack {
               commands: [
                 "echo Entered the install phase...",
                 "echo Installing gcc11...",
-                "yum update",
                 "yum list \*gcc11\*",
                 "yum install -y gcc11.x86_64 gcc11-c++.x86_64",
                 "gcc --version",
