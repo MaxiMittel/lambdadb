@@ -167,14 +167,14 @@ export class CdkStack extends cdk.Stack {
               commands: [
                 "echo Entered the install phase...",
                 "wget -qO- \"https://cmake.org/files/v3.25/cmake-3.25.0-linux-x86_64.tar.gz\" | tar --strip-components=1 -xz -C ~/.local",
-                "cmake --version",
+                "cmake3 --version",
               ],
             },
             build: {
               commands: [
                 "echo Building Lambda package...",
                 "mkdir build-lambda && cd build-lambda",
-                "cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=out -DRUNTIME=AWS_LAMBDA",
+                "cmake3 .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=out -DRUNTIME=AWS_LAMBDA",
                 "make",
                 "make aws-lambda-package-lambdadb-lambda",
                 "echo Copying lambdadb.zip to S3...",
@@ -182,7 +182,7 @@ export class CdkStack extends cdk.Stack {
                 "cd ..",
                 "echo Building EC2 package...",
                 "mkdir build-ec2 && cd build-ec2",
-                "cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=out -DRUNTIME=AWS_EC2",
+                "cmake3 .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=out -DRUNTIME=AWS_EC2",
                 "make",
                 "echo Copying lambdadb-ec2 to S3...",
                 `aws s3 cp lambdadb.zip s3://${deploymentBucket.bucketName}/lambdadb-ec2.zip`,
