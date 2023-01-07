@@ -20,7 +20,16 @@ set(BUILD_SHARED_LIBS ON CACHE STRING "Link to shared libraries by default.")
 find_package(AWSSDK REQUIRED COMPONENTS s3)
 file( GLOB_RECURSE  LIB_SOURCES src/*.cpp )
 file( GLOB_RECURSE  LIB_HEADERS src/*.h )
-add_executable(${PROJECT_NAME} main.cpp ${LIB_SOURCES} ${LIB_HEADERS})
+
+
+#Check if RUNTIME equals "lam" and if so, add the main.cpp file to the project.
+if (RUNTIME STREQUAL "AWS_LAMBDA")
+    add_executable(${PROJECT_NAME} lambda-main.cpp ${LIB_SOURCES} ${LIB_HEADERS})
+elseif(RUNTIME STREQUAL "AWS_EC2")
+    add_executable(${PROJECT_NAME} ec2-main.cpp ${LIB_SOURCES} ${LIB_HEADERS})
+else()
+    add_executable(${PROJECT_NAME} local-main.cpp ${LIB_SOURCES} ${LIB_HEADERS})
+endif()
 
 #Windows: This 'if' clause copies the SDK libraries from the installation location to the place where 
 #  this project's executable is located.  Without this you'll need to copy the install 
@@ -47,4 +56,11 @@ endif()
 set_compiler_flags(${PROJECT_NAME})
 set_compiler_warnings(${PROJECT_NAME})
 target_compile_options (${PROJECT_NAME} PUBLIC -fexceptions)
-target_link_libraries(${PROJECT_NAME} ${AWSSDK_LINK_LIBRARIES} nlohmann_json::nlohmann_json)
+
+if (RUNTIME STREQUAL "AWS_LAMBDA")
+    find_package(aws-lambda-runtime REQUIRED)
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${AWSSDK_LINK_LIBRARIES} nlohmann_json::nlohmann_json AWS::aws-lambda-runtime)
+    aws_lambda_package_target(${PROJECT_NAME})
+else()
+    target_link_libraries(${PROJECT_NAME} ${AWSSDK_LINK_LIBRARIES} nlohmann_json::nlohmann_json)
+endif()

@@ -37,7 +37,7 @@ std::shared_ptr<Node> AST::analyzeStatement(parser::NodeStmt* node) {
     } else if (node->insert_stmt != nullptr) {
         return analyzeStatement((parser::NodeInsertStmt*) node->insert_stmt.get());
     } else {
-        assert(false);
+        throw std::runtime_error("Unknown statement type");
     }
 }
 
