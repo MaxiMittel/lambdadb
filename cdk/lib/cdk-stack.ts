@@ -166,14 +166,7 @@ export class CdkStack extends cdk.Stack {
             install: {
               commands: [
                 "echo Entered the install phase...",
-                "mkdir ~/temp",
-                "cd ~/temp",
-                "wget https://cmake.org/files/v3.20/cmake-3.20.0-linux-x86_64.tar.gz",
-                "tar -xzvf cmake-3.20.0-linux-x86_64.tar.gz",
-                "cd cmake-3.20.0-linux-x86_64/",
-                "./bootstrap",
-                "make -j$(nproc)",
-                "sudo make install",
+                "wget -qO- \"https://cmake.org/files/v3.25/cmake-3.25.0-linux-x86_64.tar.gz\" | tar --strip-components=1 -xz -C ~/.local",
                 "cmake --version",
               ],
             },
