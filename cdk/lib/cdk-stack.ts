@@ -174,6 +174,7 @@ export class CdkStack extends cdk.Stack {
                 "echo 'eval \"$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)\"' >> /root/.profile",
                 "eval \"$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)\"",
                 "brew install gcc@10",
+                "brew info gcc@10",
                 "export CC=/home/linuxbrew/.linuxbrew/bin/gcc-10",
                 "export CXX=/home/linuxbrew/.linuxbrew/bin/g++-10",
                 "gcc --version",
