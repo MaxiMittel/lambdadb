@@ -176,11 +176,13 @@ export class CdkStack extends cdk.Stack {
                 "cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/usr/local/ -DCMAKE_INSTALL_PREFIX=/usr/local/ -DBUILD_ONLY=\"s3\"",
                 "make",
                 "make install",
+                "cd ~",
                 "echo Installing the AWS Lambda Runtime...",
                 "git clone https://github.com/awslabs/aws-lambda-cpp.git",
                 "cd aws-lambda-cpp",
                 "mkdir build && cd build",
-                "cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local/"
+                "cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local/",
+                "cd ~",
               ],
             },
             build: {
