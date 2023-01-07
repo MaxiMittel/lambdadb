@@ -165,7 +165,7 @@ export class CdkStack extends cdk.Stack {
           phases: {
             install: {
               commands: [
-                "echo Entered the install phase...",
+                "echo Entered the install phase.",
                 "echo Installing gcc10...",
                 "yum update -y",
                 "sudo yum groupinstall -y \"Development Tools\"",
