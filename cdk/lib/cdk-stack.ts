@@ -166,16 +166,28 @@ export class CdkStack extends cdk.Stack {
             install: {
               commands: [
                 "echo Entered the install phase...",
+                "echo Installing cmake 3.25...",
                 "mkdir -p cmake-3.25 && wget -qO- \"https://cmake.org/files/v3.25/cmake-3.25.0-linux-x86_64.tar.gz\" | tar --strip-components=1 -xz -C cmake-3.25",
                 "export PATH=`pwd`/cmake-3.25/bin:$PATH",
                 "cmake --version",
+                "echo Installing the AWS SDK for C++...",
+                "git clone --recurse-submodules https://github.com/aws/aws-sdk-cpp",
+                "mkdir -p aws-sdk-cpp/build && cd aws-sdk-cpp/build",
+                "cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/usr/local/ -DCMAKE_INSTALL_PREFIX=/usr/local/ -DBUILD_ONLY=\"s3\"",
+                "make",
+                "make install",
+                "echo Installing the AWS Lambda Runtime...",
+                "git clone https://github.com/awslabs/aws-lambda-cpp.git",
+                "cd aws-lambda-cpp",
+                "mkdir build && cd build",
+                "cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local/"
               ],
             },
             build: {
               commands: [
                 "echo Building Lambda package...",
                 "mkdir build-lambda && cd build-lambda",
-                "cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=out -DRUNTIME=AWS_LAMBDA",
+                "cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/usr/local/ -DRUNTIME=AWS_LAMBDA",
                 "make",
                 "make aws-lambda-package-lambdadb-lambda",
                 "echo Copying lambdadb.zip to S3...",
@@ -183,7 +195,7 @@ export class CdkStack extends cdk.Stack {
                 "cd ..",
                 "echo Building EC2 package...",
                 "mkdir build-ec2 && cd build-ec2",
-                "cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=out -DRUNTIME=AWS_EC2",
+                "cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/usr/local/ -DRUNTIME=AWS_EC2",
                 "make",
                 "echo Copying lambdadb-ec2 to S3...",
                 `aws s3 cp lambdadb.zip s3://${deploymentBucket.bucketName}/lambdadb-ec2.zip`,
