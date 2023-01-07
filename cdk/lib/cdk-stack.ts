@@ -166,6 +166,7 @@ export class CdkStack extends cdk.Stack {
             install: {
               commands: [
                 "echo Entered the install phase...",
+                "yum -y update",
                 "yum install -y cmake3",
                 "cmake3 --version",
               ],
