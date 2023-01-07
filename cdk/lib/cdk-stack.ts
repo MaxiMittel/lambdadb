@@ -182,6 +182,8 @@ export class CdkStack extends cdk.Stack {
                 "cd aws-lambda-cpp",
                 "mkdir build && cd build",
                 "cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local/",
+                "make",
+                "make install",
                 "cd ../..",
               ],
             },
