@@ -165,7 +165,7 @@ export class CdkStack extends cdk.Stack {
           phases: {
             install: {
               commands: [
-                "echo Entered the install phase.",
+                "echo Entered the install phase...",
                 "echo Installing cmake 3.25...",
                 "mkdir -p cmake-3.25 && wget -qO- \"https://cmake.org/files/v3.25/cmake-3.25.0-linux-x86_64.tar.gz\" | tar --strip-components=1 -xz -C cmake-3.25",
                 "export PATH=`pwd`/cmake-3.25/bin:$PATH",
@@ -185,6 +185,9 @@ export class CdkStack extends cdk.Stack {
                 "make",
                 "make install",
                 "cd ../..",
+                "echo Installing libc...",
+                "yum install glibc-devel",
+                "yum install glibc-devel.i686"
               ],
             },
             build: {
