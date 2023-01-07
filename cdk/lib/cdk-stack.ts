@@ -169,6 +169,8 @@ export class CdkStack extends cdk.Stack {
                 "echo Installing gcc10...",
                 "yum update -y",
                 "yum install gcc10.x86_64 gcc10-c++.x86_64 -y",
+                "export CC=/usr/bin/gcc-10",
+                "export CXX=/usr/bin/g++-10",
                 "gcc --version",
                 "echo Installing cmake 3.25...",
                 "mkdir -p cmake-3.25 && wget -qO- \"https://cmake.org/files/v3.25/cmake-3.25.0-linux-x86_64.tar.gz\" | tar --strip-components=1 -xz -C cmake-3.25",
