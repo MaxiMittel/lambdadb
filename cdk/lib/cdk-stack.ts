@@ -167,7 +167,7 @@ export class CdkStack extends cdk.Stack {
               commands: [
                 "echo Entered the install phase...",
                 "echo Installing gcc11...",
-                "sudo yum install -y gcc",
+                "yum install -y gcc11.x86_64 gcc11-c++.x86_64",
                 "gcc --version",
                 "echo Installing cmake 3.25...",
                 "mkdir -p cmake-3.25 && wget -qO- \"https://cmake.org/files/v3.25/cmake-3.25.0-linux-x86_64.tar.gz\" | tar --strip-components=1 -xz -C cmake-3.25",
