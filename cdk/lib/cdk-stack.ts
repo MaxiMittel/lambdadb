@@ -242,7 +242,7 @@ export class CdkStack extends cdk.Stack {
       repo: "lambdadb",
       oauthToken: cdk.SecretValue.secretsManager("github-token"),
       output: sourceOutput,
-      branch: "main",
+      branch: "master",
     });
 
     pipeline.addStage({
