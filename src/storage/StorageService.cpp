@@ -11,11 +11,9 @@
 #include <aws/s3/model/DeleteObjectRequest.h>
 #include <sstream>
 
-StorageService::StorageService(std::string bucketName): BUCKET_NAME(std::move(bucketName)) {}
+StorageService::StorageService(std::string bucketName, Aws::S3::S3Client& s3Client): BUCKET_NAME(bucketName), s3_client(s3Client) {}
 
 Buffer StorageService::readBytes(const std::string& key, size_t offset, size_t length) {
-    Aws::S3::S3Client s3_client;
-
     Aws::S3::Model::GetObjectRequest object_request;
     object_request.SetBucket(BUCKET_NAME);
     object_request.SetKey(key);
@@ -39,8 +37,6 @@ Buffer StorageService::readBytes(const std::string& key, size_t offset, size_t l
 }
 
 Buffer StorageService::readObject(std::string key) {
-    Aws::S3::S3Client s3_client;
-
     Aws::S3::Model::GetObjectRequest object_request;
     object_request.SetBucket(BUCKET_NAME);
     object_request.SetKey(key);
@@ -64,8 +60,6 @@ Buffer StorageService::readObject(std::string key) {
 }
 
 std::string StorageService::readObjectAsString(std::string key) {
-    Aws::S3::S3Client s3_client;
-
     Aws::S3::Model::GetObjectRequest object_request;
     object_request.SetBucket(BUCKET_NAME);
     object_request.SetKey(key);
@@ -84,8 +78,6 @@ std::string StorageService::readObjectAsString(std::string key) {
 }
 
 void StorageService::writeObject(std::string key, Buffer content) {
-    Aws::S3::S3Client s3_client;
-
     Aws::S3::Model::PutObjectRequest object_request;
     object_request.SetBucket(BUCKET_NAME);
     object_request.SetKey(key);
@@ -99,8 +91,6 @@ void StorageService::writeObject(std::string key, Buffer content) {
 }
 
 size_t StorageService::appendObject(std::string key, Buffer content) {
-    Aws::S3::S3Client s3_client;
-
     Aws::S3::Model::GetObjectRequest object_request;
     object_request.SetBucket(BUCKET_NAME);
     object_request.SetKey(key);
@@ -128,8 +118,6 @@ size_t StorageService::appendObject(std::string key, Buffer content) {
 }
 
 void StorageService::writeBytes(std::string key, size_t offset, Buffer content) {
-    Aws::S3::S3Client s3_client;
-
     Aws::S3::Model::GetObjectRequest object_request;
     object_request.SetBucket(BUCKET_NAME);
     object_request.SetKey(key);
@@ -153,8 +141,6 @@ void StorageService::writeBytes(std::string key, size_t offset, Buffer content) 
 }
 
 void StorageService::deleteBytes(std::string key, size_t offset, size_t length) {
-    Aws::S3::S3Client s3_client;
-
     Aws::S3::Model::GetObjectRequest object_request;
     object_request.SetBucket(BUCKET_NAME);
     object_request.SetKey(key);
@@ -179,8 +165,6 @@ void StorageService::deleteBytes(std::string key, size_t offset, size_t length) 
 }
 
 void StorageService::deleteObject(std::string key) {
-    Aws::S3::S3Client s3_client;
-
     Aws::S3::Model::DeleteObjectRequest object_request;
     object_request.SetBucket(BUCKET_NAME);
     object_request.SetKey(key);
@@ -193,8 +177,6 @@ void StorageService::deleteObject(std::string key) {
 }
 
 bool StorageService::exists(std::string key) {
-    Aws::S3::S3Client s3_client;
-
     Aws::S3::Model::HeadObjectRequest object_request;
     object_request.SetBucket(BUCKET_NAME);
     object_request.SetKey(key);

@@ -2,6 +2,8 @@
 #include <vector>
 #include <aws/core/Aws.h>
 #include <aws/lambda-runtime/runtime.h>
+#include <aws/core/client/ClientConfiguration.h>
+#include <aws/core/auth/AWSCredentialsProvider.h>
 #include "src/net/Server.h"
 #include "src/storage/StorageService.h"
 #include "src/db/Table.h"
@@ -49,7 +51,13 @@ invocation_response main_handler(invocation_request const &request)
             sql::ast::AST ast(parser, repo);
             ast.analyze();
 
-            StorageService storageService("serverless-db-9umfiaj");
+            Aws::Client::ClientConfiguration config;
+            config.region = "eu-central-1";
+            config.caFile = "/etc/pki/tls/certs/ca-bundle.crt";
+
+            Aws::S3::S3Client s3Client = Aws::S3::S3Client(config);
+
+            StorageService storageService("lambdadb-data-bucket", s3Client);
             db::Database db(database, storageService);
 
             sql::ast::Evaluator evalutor(ast, db);

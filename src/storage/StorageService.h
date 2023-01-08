@@ -8,6 +8,7 @@
 #include <string>
 #include <optional>
 #include <aws/core/Aws.h>
+#include <aws/s3/S3Client.h>
 
 struct Buffer {
     uint8_t* data;
@@ -17,9 +18,10 @@ struct Buffer {
 class StorageService {
 private:
     std::string BUCKET_NAME;
+    Aws::S3::S3Client s3_client;
 
 public:
-    StorageService(std::string bucketName);
+    StorageService(std::string bucketName, Aws::S3::S3Client& s3Client);
 
     /**
      * Reads a byterange from the given file

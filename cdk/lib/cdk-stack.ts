@@ -4,12 +4,8 @@ import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as s3 from "aws-cdk-lib/aws-s3";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
-import * as codebuild from "aws-cdk-lib/aws-codebuild";
-import * as codepipeline from "aws-cdk-lib/aws-codepipeline";
-import * as codepipeline_actions from "aws-cdk-lib/aws-codepipeline-actions";
 import * as keypair from "cdk-ec2-key-pair";
 import * as iam from "aws-cdk-lib/aws-iam";
-import { VpcSubnetGroupType } from "aws-cdk-lib/cx-api";
 
 const SERVICE_NAME = "lambdadb";
 
@@ -18,10 +14,28 @@ export class CdkStack extends cdk.Stack {
     super(scope, id, props);
 
     // Create S3 bucket
-    const bucket = new s3.Bucket(this, `${SERVICE_NAME}-bucket`);
+    const bucket = new s3.Bucket(this, `${SERVICE_NAME}-data-bucket`, {
+      bucketName: `${SERVICE_NAME}-data-bucket`,
+    });
 
     // Create deployment bucket
-    const deploymentBucket = new s3.Bucket(this, `${SERVICE_NAME}-deployment-bucket`);
+    const deploymentBucket = new s3.Bucket(this, `${SERVICE_NAME}-deployment-bucket`, {
+      bucketName: `${SERVICE_NAME}-deployment-bucket`,
+      publicReadAccess: true,
+    });
+
+    const functionIamRole = new iam.Role(this, `${SERVICE_NAME}-lambda-role`, {
+      assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
+    });
+
+    // Add S3 permissions to lambda functions
+    functionIamRole.addToPolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ["s3:*"],
+        resources: [bucket.bucketArn, `${bucket.bucketArn}/*`],
+      })
+    );
 
     // Create lambda functions with different memory sizes
     const memorySizes = [128, 256, 512, 1024, 2048, 3008];
@@ -31,23 +45,18 @@ export class CdkStack extends cdk.Stack {
       functions.push(
         new lambda.Function(
           this,
-          `${SERVICE_NAME}-lambdadb-func-${memorySize}`,
+          `${SERVICE_NAME}-func-${memorySize}`,
           {
+            functionName: `${SERVICE_NAME}-func-${memorySize}`,
             code: lambda.Code.fromAsset("./runtimes/lambdadb.zip"),
-            handler: "lambdadb-runtime",
+            handler: "main_handler",
             runtime: lambda.Runtime.PROVIDED,
             memorySize,
+            timeout: cdk.Duration.seconds(30),
+            role: functionIamRole,
           }
         )
       );
-    }
-
-    // Add S3 permissions to lambda functions
-    for (const func of functions) {
-      bucket.grantRead(func);
-      bucket.grantWrite(func);
-      bucket.grantDelete(func);
-      bucket.grantPut(func);
     }
 
     // Create instance exploration dynamodb table
@@ -122,8 +131,8 @@ export class CdkStack extends cdk.Stack {
         new ec2.Instance(this, `ec2-instance-${i}`, {
           vpc,
           instanceType: ec2.InstanceType.of(
-            ec2.InstanceClass.T2,
-            ec2.InstanceSize.MICRO
+            ec2.InstanceClass.T3,
+            ec2.InstanceSize.MEDIUM
           ),
           machineImage: ami,
           securityGroup: securityGroup,
@@ -150,7 +159,7 @@ export class CdkStack extends cdk.Stack {
     }
 
     // Create codebuild with github source
-    const codebuildProject = new codebuild.PipelineProject(
+    /*const codebuildProject = new codebuild.PipelineProject(
       this,
       `${SERVICE_NAME}-codebuild-project`,
       {
@@ -167,7 +176,7 @@ export class CdkStack extends cdk.Stack {
               commands: [
                 "echo Entered the install phase...",
                 "echo Installing cmake 3.25...",
-                "mkdir -p cmake-3.25 && wget -qO- \"https://cmake.org/files/v3.25/cmake-3.25.0-linux-x86_64.tar.gz\" | tar --strip-components=1 -xz -C cmake-3.25",
+                "mkdir -p cmake-3.25 && wget -qO- "https://cmake.org/files/v3.25/cmake-3.25.0-linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C cmake-3.25",
                 "export PATH=`pwd`/cmake-3.25/bin:$PATH",
                 "cmake --version",
                 "echo Installing the AWS SDK for C++...",
@@ -283,7 +292,7 @@ export class CdkStack extends cdk.Stack {
     pipeline.addStage({
       stageName: "Build",
       actions: [buildAction],
-    });
+    });*/
 
     // Create outputs
     new cdk.CfnOutput(this, "functions", {
@@ -293,6 +302,11 @@ export class CdkStack extends cdk.Stack {
     // Output the public IP address of the EC2 instance
     new cdk.CfnOutput(this, "IP Address", {
       value: instances.map((i) => i.instancePublicIp).join("\n"),
+    });
+
+    // Output the instance ID of the EC2 instance
+    new cdk.CfnOutput(this, "Instance ID", {
+      value: instances.map((i) => i.instanceId).join("\n"),
     });
 
     // Command to download the SSH key
@@ -319,12 +333,12 @@ export class CdkStack extends cdk.Stack {
       value: bucket.bucketName,
     });
 
-    new cdk.CfnOutput(this, "instanceTable", {
-      value: instanceTable.tableName,
+    new cdk.CfnOutput(this, "deploymentBucket", {
+      value: deploymentBucket.bucketName,
     });
 
-    new cdk.CfnOutput(this, "codebuildProject", {
-      value: codebuildProject.projectName,
+    new cdk.CfnOutput(this, "instanceTable", {
+      value: instanceTable.tableName,
     });
   }
 }

@@ -29,7 +29,9 @@ int main()
         sql::ast::AST ast(parser, repo);
         ast.analyze();
 
-        StorageService storageService("serverless-db-9umfiaj");
+        Aws::S3::S3Client s3Client = Aws::S3::S3Client();
+
+        StorageService storageService("lambdadb-data-bucket", s3Client);
         db::Database db(database, storageService);
 
         sql::ast::Evaluator evalutor(ast, db);
